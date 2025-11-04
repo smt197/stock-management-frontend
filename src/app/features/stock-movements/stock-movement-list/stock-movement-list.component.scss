@@ -1,0 +1,177 @@
+.stock-movement-list-container {
+  padding: 20px;
+
+  mat-card {
+    mat-card-header {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      padding: 20px 24px;
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+
+        .header-left {
+          mat-card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 24px;
+            margin-bottom: 8px;
+
+            mat-icon {
+              color: #1976d2;
+            }
+          }
+
+          mat-card-subtitle {
+            margin: 0;
+            color: rgba(0, 0, 0, 0.6);
+          }
+        }
+
+        .header-actions {
+          button mat-icon {
+            margin-right: 4px;
+          }
+        }
+      }
+    }
+
+    mat-card-content {
+      padding: 24px;
+
+      .table-toolbar {
+        margin-bottom: 20px;
+
+        .search-field {
+          width: 100%;
+          max-width: 400px;
+        }
+      }
+
+      .loading-container {
+        text-align: center;
+        padding: 40px;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .table-container {
+        overflow-x: auto;
+
+        .movements-table {
+          width: 100%;
+
+          th {
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.87);
+          }
+
+          td {
+            mat-chip-set {
+              mat-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+
+                mat-icon {
+                  font-size: 16px;
+                  width: 16px;
+                  height: 16px;
+                }
+
+                &.chip-in {
+                  background-color: #2196f3;
+                  color: white;
+
+                  mat-icon {
+                    color: white;
+                  }
+                }
+
+                &.chip-out {
+                  background-color: #f44336;
+                  color: white;
+
+                  mat-icon {
+                    color: white;
+                  }
+                }
+
+                &.chip-adjustment {
+                  background-color: #ff9800;
+                  color: white;
+
+                  mat-icon {
+                    color: white;
+                  }
+                }
+              }
+            }
+          }
+
+          .quantity-in {
+            color: #4caf50;
+            font-weight: 600;
+          }
+
+          .quantity-out {
+            color: #f44336;
+            font-weight: 600;
+          }
+
+          .text-muted {
+            color: rgba(0, 0, 0, 0.38);
+          }
+        }
+      }
+
+      .no-data {
+        text-align: center;
+        padding: 60px 20px;
+        color: rgba(0, 0, 0, 0.38);
+
+        mat-icon {
+          font-size: 64px;
+          width: 64px;
+          height: 64px;
+          margin-bottom: 16px;
+        }
+
+        p {
+          font-size: 16px;
+          margin-bottom: 20px;
+        }
+      }
+
+      mat-paginator {
+        margin-top: 20px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .stock-movement-list-container {
+    padding: 10px;
+
+    mat-card {
+      mat-card-header {
+        .header-content {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+
+          .header-actions {
+            width: 100%;
+
+            button {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+}

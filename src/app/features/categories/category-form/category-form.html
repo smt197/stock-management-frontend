@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+  {{ isEditMode ? 'Modifier la catégorie' : 'Nouvelle catégorie' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="categoryForm" class="category-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nom de la catégorie</mat-label>
+      <input matInput formControlName="name" placeholder="Ex: Électronique" required>
+      <mat-icon matPrefix>label</mat-icon>
+      <mat-error *ngIf="categoryForm.get('name')?.hasError('required')">
+        Le nom est requis
+      </mat-error>
+      <mat-error *ngIf="categoryForm.get('name')?.hasError('maxlength')">
+        Maximum 255 caractères
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"
+                placeholder="Description de la catégorie"
+                rows="3"></textarea>
+      <mat-icon matPrefix>description</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Catégorie parente</mat-label>
+      <mat-select formControlName="parent_id">
+        <mat-option [value]="null">Aucune (catégorie principale)</mat-option>
+        <mat-option *ngFor="let cat of categories" [value]="cat.id">
+          {{ cat.name }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>account_tree</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Statut</mat-label>
+      <mat-select formControlName="status" required>
+        <mat-option value="active">Actif</mat-option>
+        <mat-option value="inactive">Inactif</mat-option>
+      </mat-select>
+      <mat-icon matPrefix>toggle_on</mat-icon>
+      <mat-error *ngIf="categoryForm.get('status')?.hasError('required')">
+        Le statut est requis
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">
+    Annuler
+  </button>
+  <button mat-raised-button color="primary"
+          (click)="onSubmit()"
+          [disabled]="categoryForm.invalid || loading">
+    <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+    {{ isEditMode ? 'Enregistrer' : 'Créer' }}
+  </button>
+</mat-dialog-actions>

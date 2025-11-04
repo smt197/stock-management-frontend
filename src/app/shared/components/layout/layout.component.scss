@@ -1,0 +1,366 @@
+@use '../../../../styles/variables' as vars;
+
+// Toolbar
+.toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: vars.$toolbar-height;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, vars.$primary-color 0%, #1565c0 100%);
+
+  .toolbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 0 vars.$spacing-md;
+  }
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: vars.$spacing-md;
+  }
+
+  .menu-button {
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: rotate(90deg);
+    }
+  }
+
+  .app-branding {
+    display: flex;
+    align-items: center;
+    gap: vars.$spacing-sm;
+
+    .app-logo {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .app-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: vars.$spacing-xs;
+
+    button {
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+// User Menu
+.user-menu-header {
+  display: flex;
+  align-items: center;
+  gap: vars.$spacing-md;
+  padding: vars.$spacing-md;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+
+  .user-avatar {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: vars.$primary-color;
+  }
+
+  .user-info {
+    .user-name {
+      font-weight: 600;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.87);
+    }
+
+    .user-email {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.54);
+      margin-top: 2px;
+    }
+  }
+}
+
+.dark-theme .user-menu-header {
+  background: linear-gradient(135deg, #2c2c2c 0%, #1e1e1e 100%);
+
+  .user-info {
+    .user-name {
+      color: rgba(255, 255, 255, 0.87);
+    }
+
+    .user-email {
+      color: rgba(255, 255, 255, 0.54);
+    }
+  }
+}
+
+.logout-button {
+  color: vars.$warn-color !important;
+}
+
+// Sidenav Container
+.sidenav-container {
+  position: fixed;
+  top: vars.$toolbar-height;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+// Sidenav
+.sidenav {
+  width: vars.$sidebar-width;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+
+  .sidenav-header {
+    padding: vars.$spacing-lg vars.$spacing-md;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+    .company-info {
+      display: flex;
+      align-items: center;
+      gap: vars.$spacing-md;
+
+      .company-icon {
+        font-size: 40px;
+        width: 40px;
+        height: 40px;
+        color: vars.$primary-color;
+      }
+
+      .company-details {
+        .company-name {
+          font-weight: 600;
+          font-size: 15px;
+          color: rgba(0, 0, 0, 0.87);
+        }
+
+        .company-role {
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.54);
+          margin-top: 2px;
+          padding: 2px 8px;
+          background: vars.$primary-color;
+          color: white;
+          border-radius: 12px;
+          display: inline-block;
+        }
+      }
+    }
+  }
+
+  .nav-list {
+    flex: 1;
+    padding-top: vars.$spacing-md;
+    overflow-y: auto;
+  }
+
+  .nav-item {
+    margin: 0 vars.$spacing-sm vars.$spacing-xs vars.$spacing-sm;
+    border-radius: vars.$border-radius-md;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0;
+      background: vars.$primary-color;
+      transition: width 0.3s ease;
+    }
+
+    &:hover {
+      background-color: rgba(vars.$primary-color, 0.08);
+      transform: translateX(4px);
+
+      .nav-icon {
+        transform: scale(1.1);
+      }
+    }
+
+    &.active {
+      background: linear-gradient(90deg, rgba(vars.$primary-color, 0.15) 0%, rgba(vars.$primary-color, 0.05) 100%);
+      color: vars.$primary-color;
+      font-weight: 500;
+
+      &::before {
+        width: 4px;
+      }
+
+      .nav-icon {
+        color: vars.$primary-color;
+        transform: scale(1.1);
+      }
+
+      .nav-label {
+        font-weight: 600;
+      }
+    }
+
+    .nav-icon {
+      transition: all 0.3s ease;
+      margin-right: vars.$spacing-sm;
+    }
+
+    .nav-label {
+      transition: all 0.3s ease;
+    }
+
+    .nav-badge {
+      position: absolute;
+      right: vars.$spacing-md;
+      background: vars.$primary-color;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+
+      &.badge-warn {
+        background: vars.$warn-color;
+        animation: pulse 2s infinite;
+      }
+    }
+  }
+
+  .sidenav-footer {
+    padding: vars.$spacing-md;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    background: #f8f9fa;
+
+    .version-info {
+      display: flex;
+      align-items: center;
+      gap: vars.$spacing-xs;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.54);
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}
+
+// Dark theme adjustments
+.dark-theme {
+  .sidenav {
+    .sidenav-header {
+      background: linear-gradient(135deg, #2c2c2c 0%, #1e1e1e 100%);
+      border-bottom-color: rgba(255, 255, 255, 0.08);
+
+      .company-details {
+        .company-name {
+          color: rgba(255, 255, 255, 0.87);
+        }
+      }
+    }
+
+    .nav-item {
+      &:hover {
+        background-color: rgba(vars.$primary-color, 0.15);
+      }
+
+      &.active {
+        background: linear-gradient(90deg, rgba(vars.$primary-color, 0.25) 0%, rgba(vars.$primary-color, 0.1) 100%);
+      }
+    }
+
+    .sidenav-footer {
+      border-top-color: rgba(255, 255, 255, 0.08);
+      background: #1e1e1e;
+
+      .version-info {
+        color: rgba(255, 255, 255, 0.54);
+      }
+    }
+  }
+}
+
+// Main Content
+.main-content {
+  padding: vars.$spacing-lg;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  min-height: 100%;
+}
+
+.dark-theme .main-content {
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+.content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-in;
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .toolbar {
+    height: vars.$toolbar-height-mobile;
+
+    .app-branding {
+      .app-title {
+        font-size: 16px;
+      }
+    }
+  }
+
+  .sidenav-container {
+    top: vars.$toolbar-height-mobile;
+  }
+
+  .sidenav {
+    width: 100%;
+  }
+
+  .main-content {
+    padding: vars.$spacing-md;
+  }
+}

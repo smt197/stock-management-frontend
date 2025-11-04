@@ -1,0 +1,113 @@
+<div class="page-header">
+  <h1>Gestion des Produits</h1>
+  <button mat-raised-button color="primary" (click)="addProduct()">
+    <mat-icon>add</mat-icon>
+    Nouveau Produit
+  </button>
+</div>
+
+<mat-card class="table-card">
+  <mat-card-header>
+    <mat-card-title>Liste des Produits</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="table-toolbar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Rechercher</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Rechercher un produit...">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner></mat-spinner>
+      </div>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <!-- SKU Column -->
+          <ng-container matColumnDef="sku">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>SKU</th>
+            <td mat-cell *matCellDef="let product">{{ product.sku }}</td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+            <td mat-cell *matCellDef="let product">{{ product.name }}</td>
+          </ng-container>
+
+          <!-- Category Column -->
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>Cat\u00e9gorie</th>
+            <td mat-cell *matCellDef="let product">{{ product.category_id }}</td>
+          </ng-container>
+
+          <!-- Quantity Column -->
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Quantit\u00e9</th>
+            <td mat-cell *matCellDef="let product">
+              <span [class.low-stock]="product.quantity <= product.min_quantity">
+                {{ product.quantity }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Price Column -->
+          <ng-container matColumnDef="unit_price">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix</th>
+            <td mat-cell *matCellDef="let product">{{ product.unit_price | currency:'EUR' }}</td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let product">
+              <mat-chip-set>
+                <mat-chip [class]="'chip-status-' + product.status" [highlighted]="true">
+                  {{ product.status }}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let product">
+              <button mat-icon-button [matMenuTriggerFor]="menu" color="primary">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="viewProduct(product)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Voir</span>
+                </button>
+                <button mat-menu-item (click)="editProduct(product)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Modifier</span>
+                </button>
+                <button mat-menu-item (click)="deleteProduct(product)">
+                  <mat-icon color="warn">delete</mat-icon>
+                  <span>Supprimer</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [pageSize]="10"
+        [length]="totalRecords()"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+  </mat-card-content>
+</mat-card>

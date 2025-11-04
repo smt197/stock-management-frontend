@@ -1,0 +1,242 @@
+<div class="dashboard-header">
+  <div class="header-content">
+    <div>
+      <h1>Tableau de Bord</h1>
+      <p class="header-subtitle">Bienvenue dans votre système de gestion de stock</p>
+    </div>
+    <button mat-raised-button color="primary" class="action-button" (click)="openNewMovementDialog()">
+      <mat-icon>add</mat-icon>
+      Nouvelle Opération
+    </button>
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des données...</p>
+  </div>
+} @else {
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card stat-card-primary">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper primary">
+            <mat-icon class="stat-icon">inventory_2</mat-icon>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Produits Totaux</span>
+            <h2 class="stat-value">{{ stats().totalProducts }}</h2>
+            <span class="stat-trend positive">
+              <mat-icon>trending_up</mat-icon>
+              +12% ce mois
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card stat-card-warn">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper warn">
+            <mat-icon class="stat-icon">warning</mat-icon>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Stock Bas</span>
+            <h2 class="stat-value">{{ stats().lowStockProducts }}</h2>
+            <span class="stat-trend negative">
+              <mat-icon>priority_high</mat-icon>
+              Action requise
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card stat-card-success">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper success">
+            <mat-icon class="stat-icon">euro</mat-icon>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Valeur Totale</span>
+            <h2 class="stat-value">{{ stats().totalValue | currency:'EUR':'symbol':'1.0-0' }}</h2>
+            <span class="stat-trend positive">
+              <mat-icon>trending_up</mat-icon>
+              +8% ce mois
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card stat-card-info">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper info">
+            <mat-icon class="stat-icon">swap_horiz</mat-icon>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Mouvements Récents</span>
+            <h2 class="stat-value">{{ stats().recentMovements }}</h2>
+            <span class="stat-trend neutral">
+              <mat-icon>remove</mat-icon>
+              Dernières 24h
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions-section">
+    <h3 class="section-title">
+      <mat-icon>flash_on</mat-icon>
+      Actions Rapides
+    </h3>
+    <div class="quick-actions-grid">
+      <mat-card class="quick-action-card" [routerLink]="['/products/new']">
+        <mat-icon>add_box</mat-icon>
+        <span>Ajouter Produit</span>
+      </mat-card>
+      <mat-card class="quick-action-card" [routerLink]="['/stock-movements']">
+        <mat-icon>input</mat-icon>
+        <span>Entrée Stock</span>
+      </mat-card>
+      <mat-card class="quick-action-card" [routerLink]="['/stock-movements']">
+        <mat-icon>output</mat-icon>
+        <span>Sortie Stock</span>
+      </mat-card>
+      <mat-card class="quick-action-card" [routerLink]="['/reports']">
+        <mat-icon>print</mat-icon>
+        <span>Imprimer Rapport</span>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Grid -->
+  <div class="dashboard-grid">
+    <!-- Recent Activity -->
+    <mat-card class="activity-card modern-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>history</mat-icon>
+          Activités Récentes
+        </mat-card-title>
+        <button mat-icon-button [routerLink]="['/stock-movements']" matTooltip="Voir tout">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        @if (recentActivities().length > 0) {
+          <div class="activity-list">
+            @for (activity of recentActivities(); track activity.product; let last = $last) {
+              <div class="activity-item">
+                <div [class]="'activity-icon-wrapper ' + activity.iconClass">
+                  <mat-icon class="activity-icon">{{ activity.icon }}</mat-icon>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-header">
+                    <span class="activity-title">{{ activity.title }}</span>
+                    <span class="activity-time">
+                      <mat-icon>schedule</mat-icon>
+                      {{ activity.time }}
+                    </span>
+                  </div>
+                  <div class="activity-product">
+                    <mat-icon>inventory_2</mat-icon>
+                    {{ activity.product }}
+                  </div>
+                </div>
+              </div>
+              @if (!last) {
+                <mat-divider class="activity-divider"></mat-divider>
+              }
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <mat-icon>inbox</mat-icon>
+            <p>Aucune activité récente</p>
+            <small>Les mouvements de stock apparaîtront ici</small>
+          </div>
+        }
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-stroked-button color="primary" [routerLink]="['/stock-movements']">
+          <mat-icon>arrow_forward</mat-icon>
+          Voir Tout
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Stock Status Chart -->
+    <mat-card class="chart-card modern-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>pie_chart</mat-icon>
+          État du Stock
+        </mat-card-title>
+        <button mat-icon-button>
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-placeholder">
+          <mat-icon class="placeholder-icon">show_chart</mat-icon>
+          <p class="placeholder-text">Graphique à implémenter</p>
+          <p class="placeholder-subtext">Utilisez ng2-charts pour ajouter des graphiques interactifs</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Low Stock Alerts -->
+    <mat-card class="alerts-card modern-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>notifications_active</mat-icon>
+          Alertes Stock Bas
+        </mat-card-title>
+        <span class="alert-badge">{{ stats().lowStockProducts }}</span>
+      </mat-card-header>
+      <mat-card-content>
+        @if (lowStockProducts().length > 0) {
+          <div class="alert-list">
+            @for (product of lowStockProducts(); track product.id; let last = $last) {
+              <div class="alert-item">
+                <mat-icon class="alert-icon">warning</mat-icon>
+                <div class="alert-content">
+                  <div class="alert-title">{{ product.name }}</div>
+                  <div class="alert-subtitle">
+                    Stock: {{ product.quantity }} unité{{ product.quantity > 1 ? 's' : '' }}
+                    (Min: {{ product.min_quantity }})
+                  </div>
+                </div>
+                <button mat-icon-button color="primary" [routerLink]="['/products']">
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+              @if (!last) {
+                <mat-divider></mat-divider>
+              }
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <mat-icon>check_circle</mat-icon>
+            <p>Tous les stocks sont OK</p>
+          </div>
+        }
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-button color="warn" [routerLink]="['/products']">Voir les Produits</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}

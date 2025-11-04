@@ -1,0 +1,130 @@
+@use '../../../../styles/variables' as vars;
+
+.category-list-container {
+  padding: vars.$spacing-lg;
+  animation: fadeIn 0.3s ease-in;
+
+  mat-card {
+    box-shadow: vars.$shadow-md;
+    border-radius: vars.$border-radius-lg;
+
+    mat-card-header {
+      background: linear-gradient(135deg, vars.$primary-color 0%, vars.$primary-dark 100%);
+      color: white;
+      padding: vars.$spacing-lg;
+      margin: calc(-1 * vars.$spacing-md) calc(-1 * vars.$spacing-md) vars.$spacing-lg;
+      border-radius: vars.$border-radius-lg vars.$border-radius-lg 0 0;
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+
+        .header-left {
+          mat-card-title {
+            display: flex;
+            align-items: center;
+            gap: vars.$spacing-sm;
+            font-size: 1.5rem;
+            margin-bottom: vars.$spacing-xs;
+            color: white;
+
+            mat-icon {
+              font-size: 2rem;
+              width: 2rem;
+              height: 2rem;
+            }
+          }
+
+          mat-card-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            margin-left: calc(2rem + vars.$spacing-sm);
+          }
+        }
+
+        .header-actions {
+          button {
+            mat-icon {
+              margin-right: vars.$spacing-xs;
+            }
+          }
+        }
+      }
+    }
+
+    mat-card-content {
+      padding: vars.$spacing-md;
+
+      .table-container {
+        overflow-x: auto;
+
+        .categories-table {
+          width: 100%;
+
+          th {
+            font-weight: 600;
+            color: vars.$text-secondary;
+            background-color: vars.$background-light;
+          }
+
+          td, th {
+            padding: vars.$spacing-md;
+          }
+
+          tr:hover {
+            background-color: vars.$background-hover;
+          }
+
+          .text-muted {
+            color: vars.$text-disabled;
+          }
+
+          mat-chip {
+            &.chip-active {
+              background-color: vars.$success-color;
+              color: white;
+            }
+
+            &.chip-inactive {
+              background-color: vars.$text-disabled;
+              color: white;
+            }
+          }
+        }
+
+        .no-data {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: vars.$spacing-xl 0;
+          color: vars.$text-disabled;
+
+          mat-icon {
+            font-size: 4rem;
+            width: 4rem;
+            height: 4rem;
+            margin-bottom: vars.$spacing-md;
+          }
+
+          p {
+            font-size: 1.1rem;
+            margin-bottom: vars.$spacing-md;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

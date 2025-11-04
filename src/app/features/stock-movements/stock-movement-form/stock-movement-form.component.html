@@ -1,0 +1,89 @@
+<h2 mat-dialog-title>
+  <mat-icon>add</mat-icon>
+  Nouveau mouvement de stock
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="movementForm" class="movement-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Produit</mat-label>
+      <mat-select formControlName="product_id" required>
+        <mat-option *ngFor="let product of products" [value]="product.id">
+          {{ product.name }} - SKU: {{ product.sku }} (Stock actuel: {{ product.quantity }})
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>inventory_2</mat-icon>
+      <mat-error *ngIf="movementForm.get('product_id')?.hasError('required')">
+        Le produit est requis
+      </mat-error>
+    </mat-form-field>
+
+    @if (getSelectedProduct()) {
+      <div class="product-info">
+        <mat-icon>info</mat-icon>
+        <div class="info-content">
+          <strong>Stock actuel:</strong> {{ getSelectedProduct()?.quantity }} unités
+          <br>
+          <strong>Stock minimum:</strong> {{ getSelectedProduct()?.min_quantity }} unités
+          @if (getSelectedProduct()!.max_quantity) {
+            <br>
+            <strong>Stock maximum:</strong> {{ getSelectedProduct()?.max_quantity }} unités
+          }
+        </div>
+      </div>
+    }
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Type de mouvement</mat-label>
+      <mat-select formControlName="type" required>
+        <mat-option *ngFor="let type of movementTypes" [value]="type.value">
+          <mat-icon>{{ type.icon }}</mat-icon>
+          {{ type.label }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>swap_horiz</mat-icon>
+      <mat-error *ngIf="movementForm.get('type')?.hasError('required')">
+        Le type est requis
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Quantité</mat-label>
+      <input matInput type="number" formControlName="quantity" placeholder="1" required>
+      <mat-icon matPrefix>123</mat-icon>
+      <mat-error *ngIf="movementForm.get('quantity')?.hasError('required')">
+        La quantité est requise
+      </mat-error>
+      <mat-error *ngIf="movementForm.get('quantity')?.hasError('min')">
+        La quantité doit être au moins 1
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Référence</mat-label>
+      <input matInput formControlName="reference" placeholder="Ex: BON-2024-001">
+      <mat-icon matPrefix>tag</mat-icon>
+      <mat-hint>Numéro de bon de commande, de livraison, etc.</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes"
+                placeholder="Notes additionnelles sur ce mouvement"
+                rows="3"></textarea>
+      <mat-icon matPrefix>note</mat-icon>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">
+    Annuler
+  </button>
+  <button mat-raised-button color="primary"
+          (click)="onSubmit()"
+          [disabled]="movementForm.invalid || loading">
+    <mat-icon>add</mat-icon>
+    Créer
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,98 @@
+<mat-toolbar color="primary" class="toolbar" elevation="2">
+  <div class="toolbar-content">
+    <div class="toolbar-left">
+      <button mat-icon-button (click)="toggleSidenav()" class="menu-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <div class="app-branding">
+        <mat-icon class="app-logo">inventory</mat-icon>
+        <span class="app-title">Gestion de Stock</span>
+      </div>
+    </div>
+
+    <div class="toolbar-right">
+      <button mat-icon-button matTooltip="Notifications">
+        <mat-icon [matBadge]="3" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+      </button>
+
+      <button mat-icon-button (click)="toggleTheme()" [matTooltip]="isDarkTheme() ? 'Mode Clair' : 'Mode Sombre'">
+        <mat-icon>{{ isDarkTheme() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu" xPosition="before">
+        <div class="user-menu-header">
+          <mat-icon class="user-avatar">account_circle</mat-icon>
+          <div class="user-info">
+            <div class="user-name">Administrateur</div>
+            <div class="user-email">admin@stock.com</div>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item>
+          <mat-icon>person</mat-icon>
+          <span>Mon Profil</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>settings</mat-icon>
+          <span>Paramètres</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item class="logout-button">
+          <mat-icon>logout</mat-icon>
+          <span>Déconnexion</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>
+
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #sidenav
+    [opened]="sidenavOpened()"
+    [mode]="'side'"
+    class="sidenav">
+
+    <div class="sidenav-header">
+      <div class="company-info">
+        <mat-icon class="company-icon">business</mat-icon>
+        <div class="company-details">
+          <div class="company-name">Mon Entreprise</div>
+          <div class="company-role">Admin</div>
+        </div>
+      </div>
+    </div>
+
+    <mat-nav-list class="nav-list">
+      @for (item of menuItems; track item.route) {
+        <a mat-list-item
+           [routerLink]="item.route"
+           routerLinkActive="active"
+           class="nav-item">
+          <mat-icon matListItemIcon class="nav-icon">{{ item.icon }}</mat-icon>
+          <span matListItemTitle class="nav-label">{{ item.label }}</span>
+          @if (item.badge) {
+            <span class="nav-badge" [class.badge-warn]="item.badgeType === 'warn'">{{ item.badge }}</span>
+          }
+        </a>
+      }
+    </mat-nav-list>
+
+    <div class="sidenav-footer">
+      <div class="version-info">
+        <mat-icon>info</mat-icon>
+        <span>Version 1.0.0</span>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="main-content">
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

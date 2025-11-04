@@ -1,0 +1,48 @@
+@use '../../../../styles/variables' as vars;
+
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: vars.$spacing-sm;
+  color: vars.$primary-color;
+  margin-bottom: vars.$spacing-md;
+
+  mat-icon {
+    font-size: 1.5rem;
+  }
+}
+
+mat-dialog-content {
+  padding: vars.$spacing-lg;
+  min-width: 500px;
+
+  .category-form {
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing-md;
+
+    .full-width {
+      width: 100%;
+    }
+
+    mat-form-field {
+      mat-icon[matPrefix] {
+        margin-right: vars.$spacing-sm;
+        color: vars.$text-secondary;
+      }
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: vars.$spacing-md vars.$spacing-lg;
+  border-top: 1px solid vars.$border-color;
+
+  button {
+    margin-left: vars.$spacing-sm;
+
+    mat-icon {
+      margin-right: vars.$spacing-xs;
+    }
+  }
+}

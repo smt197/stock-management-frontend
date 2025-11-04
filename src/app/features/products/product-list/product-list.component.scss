@@ -1,0 +1,135 @@
+@use '../../../../styles/variables' as vars;
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: vars.$spacing-lg;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+  }
+
+  button {
+    mat-icon {
+      margin-right: vars.$spacing-xs;
+    }
+  }
+}
+
+.table-card {
+  mat-card-header {
+    margin-bottom: vars.$spacing-md;
+  }
+}
+
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: vars.$spacing-md;
+
+  .search-field {
+    width: 300px;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: vars.$spacing-xxl;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: vars.$border-radius-md;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+
+  table {
+    width: 100%;
+
+    th {
+      font-weight: 600;
+      background-color: #fafafa;
+    }
+
+    td, th {
+      padding: vars.$spacing-md;
+    }
+
+    tr:hover {
+      background-color: vars.$bg-hover;
+    }
+  }
+}
+
+.dark-theme .table-container {
+  border-color: rgba(255, 255, 255, 0.12);
+
+  table {
+    th {
+      background-color: #1e1e1e;
+    }
+
+    tr:hover {
+      background-color: vars.$dark-bg-hover;
+    }
+  }
+}
+
+.low-stock {
+  color: vars.$warn-color;
+  font-weight: 600;
+}
+
+// Status chips
+mat-chip-set {
+  mat-chip {
+    &.chip-status-active {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    &.chip-status-inactive {
+      background-color: #9e9e9e;
+      color: white;
+    }
+
+    &.chip-status-discontinued {
+      background-color: #f44336;
+      color: white;
+    }
+  }
+}
+
+mat-paginator {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.dark-theme mat-paginator {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: vars.$spacing-md;
+
+    h1 {
+      font-size: 24px;
+    }
+  }
+
+  .table-toolbar {
+    flex-direction: column;
+    gap: vars.$spacing-md;
+
+    .search-field {
+      width: 100%;
+    }
+  }
+}
