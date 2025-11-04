@@ -8,6 +8,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SupplierService } from '../../../core/services/supplier.service';
 import { Supplier } from '../../../shared/models/supplier.model';
 import { SupplierForm } from '../supplier-form/supplier-form';
@@ -25,14 +26,15 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatDialogModule,
     MatSnackBarModule,
     MatChipsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './supplier-list.html',
   styleUrl: './supplier-list.scss',
 })
 export class SupplierList implements OnInit {
   suppliers = signal<Supplier[]>([]);
-  displayedColumns: string[] = ['id', 'name', 'email', 'phone', 'city', 'country', 'status', 'actions'];
+  displayedColumns: string[] = ['id', 'name', 'contact_person', 'email', 'phone', 'city', 'status', 'actions'];
   loading = signal(false);
 
   constructor(

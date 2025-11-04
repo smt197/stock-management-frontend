@@ -1,1 +1,121 @@
-<p>supplier-form works!</p>
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+  {{ isEditMode ? 'Modifier le fournisseur' : 'Nouveau fournisseur' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="supplierForm" class="supplier-form">
+    <!-- Section: Informations générales -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>business</mat-icon>
+        Informations générales
+      </h3>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nom du fournisseur</mat-label>
+        <input matInput formControlName="name" placeholder="Ex: Tech Supplies Inc." required>
+        <mat-icon matPrefix>business</mat-icon>
+        <mat-error *ngIf="supplierForm.get('name')?.hasError('required')">
+          Le nom est requis
+        </mat-error>
+        <mat-error *ngIf="supplierForm.get('name')?.hasError('maxlength')">
+          Maximum 255 caractères
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Personne de contact</mat-label>
+          <input matInput formControlName="contact_person" placeholder="Ex: Jean Dupont">
+          <mat-icon matPrefix>person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="status" required>
+            <mat-option value="active">Actif</mat-option>
+            <mat-option value="inactive">Inactif</mat-option>
+          </mat-select>
+          <mat-icon matPrefix>toggle_on</mat-icon>
+          <mat-error *ngIf="supplierForm.get('status')?.hasError('required')">
+            Le statut est requis
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Section: Contact -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>contact_phone</mat-icon>
+        Contact
+      </h3>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="contact@example.com">
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-error *ngIf="supplierForm.get('email')?.hasError('email')">
+            Email invalide
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Téléphone</mat-label>
+          <input matInput formControlName="phone" placeholder="+33 1 23 45 67 89">
+          <mat-icon matPrefix>phone</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Site web</mat-label>
+        <input matInput formControlName="website" placeholder="https://example.com">
+        <mat-icon matPrefix>language</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Section: Adresse -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>location_on</mat-icon>
+        Adresse
+      </h3>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Adresse</mat-label>
+        <textarea matInput formControlName="address"
+                  placeholder="Numéro et nom de rue"
+                  rows="2"></textarea>
+        <mat-icon matPrefix>home</mat-icon>
+      </mat-form-field>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Ville</mat-label>
+          <input matInput formControlName="city" placeholder="Ex: Paris">
+          <mat-icon matPrefix>location_city</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Pays</mat-label>
+          <input matInput formControlName="country" placeholder="Ex: France">
+          <mat-icon matPrefix>flag</mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">
+    Annuler
+  </button>
+  <button mat-raised-button color="primary"
+          (click)="onSubmit()"
+          [disabled]="supplierForm.invalid || loading">
+    <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+    {{ isEditMode ? 'Enregistrer' : 'Créer' }}
+  </button>
+</mat-dialog-actions>

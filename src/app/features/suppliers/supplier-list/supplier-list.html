@@ -1,1 +1,158 @@
-<p>supplier-list works!</p>
+<div class="supplier-list-container">
+  <mat-card>
+    <mat-card-header>
+      <div class="header-content">
+        <div class="header-left">
+          <mat-card-title>
+            <mat-icon>local_shipping</mat-icon>
+            Gestion des Fournisseurs
+          </mat-card-title>
+          <mat-card-subtitle>
+            {{ suppliers().length }} fournisseur(s) au total
+          </mat-card-subtitle>
+        </div>
+        <div class="header-actions">
+          <button mat-raised-button color="primary" (click)="openAddDialog()">
+            <mat-icon>add</mat-icon>
+            Nouveau Fournisseur
+          </button>
+        </div>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loading()) {
+        <div class="loading-container">
+          <mat-spinner></mat-spinner>
+          <p>Chargement des fournisseurs...</p>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table mat-table [dataSource]="suppliers()" class="suppliers-table">
+
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef> ID </th>
+              <td mat-cell *matCellDef="let supplier"> #{{ supplier.id }} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef> Nom </th>
+              <td mat-cell *matCellDef="let supplier">
+                <div class="supplier-name">
+                  <mat-icon>business</mat-icon>
+                  <strong>{{ supplier.name }}</strong>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Contact Person Column -->
+            <ng-container matColumnDef="contact_person">
+              <th mat-header-cell *matHeaderCellDef> Contact </th>
+              <td mat-cell *matCellDef="let supplier">
+                <div class="contact-info">
+                  <mat-icon>person</mat-icon>
+                  {{ supplier.contact_person || '-' }}
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Email Column -->
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef> Email </th>
+              <td mat-cell *matCellDef="let supplier">
+                @if (supplier.email) {
+                  <a [href]="'mailto:' + supplier.email" class="email-link">
+                    <mat-icon>email</mat-icon>
+                    {{ supplier.email }}
+                  </a>
+                } @else {
+                  <span class="text-muted">-</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Phone Column -->
+            <ng-container matColumnDef="phone">
+              <th mat-header-cell *matHeaderCellDef> Téléphone </th>
+              <td mat-cell *matCellDef="let supplier">
+                @if (supplier.phone) {
+                  <div class="phone-info">
+                    <mat-icon>phone</mat-icon>
+                    {{ supplier.phone }}
+                  </div>
+                } @else {
+                  <span class="text-muted">-</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Location Column -->
+            <ng-container matColumnDef="city">
+              <th mat-header-cell *matHeaderCellDef> Localisation </th>
+              <td mat-cell *matCellDef="let supplier">
+                @if (supplier.city || supplier.country) {
+                  <div class="location-info">
+                    <mat-icon>location_on</mat-icon>
+                    <span>{{ supplier.city }}{{ supplier.city && supplier.country ? ', ' : '' }}{{ supplier.country }}</span>
+                  </div>
+                } @else {
+                  <span class="text-muted">-</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef> Statut </th>
+              <td mat-cell *matCellDef="let supplier">
+                <mat-chip-set>
+                  <mat-chip [class.chip-active]="supplier.status === 'active'"
+                            [class.chip-inactive]="supplier.status === 'inactive'"
+                            [highlighted]="true">
+                    {{ supplier.status === 'active' ? 'Actif' : 'Inactif' }}
+                  </mat-chip>
+                </mat-chip-set>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef> Actions </th>
+              <td mat-cell *matCellDef="let supplier">
+                <button mat-icon-button color="primary"
+                        (click)="openEditDialog(supplier)"
+                        matTooltip="Modifier">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn"
+                        (click)="deleteSupplier(supplier)"
+                        matTooltip="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <!-- Row shown when there is no data -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                <div class="no-data">
+                  <mat-icon>business_center</mat-icon>
+                  <p>Aucun fournisseur trouvé</p>
+                  <button mat-raised-button color="primary" (click)="openAddDialog()">
+                    <mat-icon>add</mat-icon>
+                    Créer un fournisseur
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
