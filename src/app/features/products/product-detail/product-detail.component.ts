@@ -128,4 +128,14 @@ export class ProductDetailComponent implements OnInit {
     const product = this.product();
     return product ? product.quantity <= product.min_quantity : false;
   }
+
+  getImageUrl(): string | null {
+    const product = this.product();
+    if (!product) return null;
+
+    if (product.image) {
+      return `http://localhost:8000/storage/${product.image}`;
+    }
+    return product.image_url || null;
+  }
 }

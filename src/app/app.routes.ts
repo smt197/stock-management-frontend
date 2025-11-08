@@ -1,9 +1,25 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
+  // Public routes
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent),
+    canActivate: [guestGuard]
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent),
+    canActivate: [guestGuard]
+  },
+
+  // Protected routes
   {
     path: '',
     loadComponent: () => import('./shared/components/layout/layout.component').then(m => m.LayoutComponent),
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
@@ -37,8 +53,11 @@ export const routes: Routes = [
       },
       {
         path: 'reports',
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) // Placeholder
+        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
       }
     ]
-  }
+  },
+
+  // Redirect unknown routes to dashboard
+  { path: '**', redirectTo: 'dashboard' }
 ];

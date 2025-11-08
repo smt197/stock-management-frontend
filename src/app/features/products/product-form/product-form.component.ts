@@ -38,6 +38,8 @@ export class ProductFormComponent implements OnInit {
   categories: Category[] = [];
   suppliers: Supplier[] = [];
   loading: boolean = false;
+  selectedFile: File | null = null;
+  imagePreview: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -86,6 +88,11 @@ export class ProductFormComponent implements OnInit {
         image_url: this.data.product.image_url,
         status: this.data.product.status
       });
+
+      // Load existing image for preview
+      if (this.data.product.image) {
+        this.imagePreview = `http://localhost:8000/storage/${this.data.product.image}`;
+      }
     }
   }
 
@@ -111,6 +118,41 @@ export class ProductFormComponent implements OnInit {
     });
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        this.snackBar.open('Format d\'image non supporté. Utilisez JPG, PNG ou GIF.', 'Fermer', { duration: 3000 });
+        return;
+      }
+
+      // Validate file size (2MB)
+      const maxSize = 2 * 1024 * 1024;
+      if (file.size > maxSize) {
+        this.snackBar.open('L\'image est trop volumineuse. Maximum 2MB.', 'Fermer', { duration: 3000 });
+        return;
+      }
+
+      this.selectedFile = file;
+
+      // Create image preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
+  }
+
   onSubmit(): void {
     if (this.productForm.invalid) {
       return;
@@ -119,9 +161,24 @@ export class ProductFormComponent implements OnInit {
     this.loading = true;
     const formValue = this.productForm.value;
 
+    // Create FormData to support file upload
+    const formData = new FormData();
+    Object.keys(formValue).forEach(key => {
+      if (formValue[key] !== null && formValue[key] !== undefined) {
+        formData.append(key, formValue[key]);
+      }
+    });
+
+    // Append image file if selected
+    if (this.selectedFile) {
+      formData.append('image', this.selectedFile, this.selectedFile.name);
+    }
+
     if (this.isEditMode && this.data.product) {
-      const updateData: ProductUpdateDto = { ...formValue, id: this.data.product.id };
-      this.productService.update(this.data.product.id, updateData).subscribe({
+      // Add method spoofing for PUT request with FormData
+      formData.append('_method', 'PUT');
+
+      this.productService.update(this.data.product.id, formData).subscribe({
         next: () => {
           this.snackBar.open('Produit mis à jour avec succès', 'Fermer', { duration: 3000 });
           this.dialogRef.close(true);
@@ -133,8 +190,7 @@ export class ProductFormComponent implements OnInit {
         }
       });
     } else {
-      const createData: ProductCreateDto = formValue;
-      this.productService.create(createData).subscribe({
+      this.productService.create(formData).subscribe({
         next: () => {
           this.snackBar.open('Produit créé avec succès', 'Fermer', { duration: 3000 });
           this.dialogRef.close(true);

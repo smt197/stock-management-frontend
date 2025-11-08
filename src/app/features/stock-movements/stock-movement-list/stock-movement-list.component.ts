@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { StockMovementService } from '../../../core/services/stock-movement.service';
 import { ProductService } from '../../../core/services/product.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { StockMovement } from '../../../shared/models/stock-movement.model';
 import { Product } from '../../../shared/models/product.model';
 import { StockMovementFormComponent } from '../stock-movement-form/stock-movement-form.component';
@@ -56,7 +57,8 @@ export class StockMovementListComponent implements OnInit, AfterViewInit {
     private stockMovementService: StockMovementService,
     private productService: ProductService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {

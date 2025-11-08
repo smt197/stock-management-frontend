@@ -16,6 +16,7 @@ export interface Product {
   quantity: number;
   min_quantity: number;
   max_quantity?: number;
+  image?: string;
   image_url?: string;
   status: 'active' | 'inactive' | 'discontinued';
   created_at?: Date;

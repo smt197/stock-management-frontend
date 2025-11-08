@@ -1,0 +1,177 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+
+  .login-card-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1000px;
+    width: 100%;
+    gap: 40px;
+    align-items: center;
+
+    .login-card {
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+      mat-card-header {
+        margin-bottom: 30px;
+        display: block;
+
+        .header-content {
+          text-align: center;
+
+          .logo {
+            margin-bottom: 20px;
+
+            .logo-icon {
+              font-size: 64px;
+              width: 64px;
+              height: 64px;
+              color: #667eea;
+            }
+          }
+
+          mat-card-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+          }
+
+          mat-card-subtitle {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+          }
+        }
+      }
+
+      .login-form {
+        .full-width {
+          width: 100%;
+          margin-bottom: 20px;
+        }
+
+        .form-actions {
+          margin-top: 24px;
+
+          .submit-button {
+            width: 100%;
+            height: 48px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            display: flex;
+          align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            mat-spinner {
+              display: inline-block;
+            }
+          }
+        }
+
+        .form-footer {
+          margin-top: 24px;
+          text-align: center;
+
+          p {
+            margin: 0;
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 14px;
+          }
+
+          .register-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+
+            &:hover {
+              color: #764ba2;
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+
+    .info-section {
+      color: white;
+      padding: 40px;
+
+      h2 {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0 0 16px 0;
+      }
+
+      p {
+        font-size: 18px;
+        margin: 0 0 32px 0;
+        opacity: 0.9;
+      }
+
+      .features-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 16px;
+          font-size: 16px;
+
+          mat-icon {
+            color: #4ade80;
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .login-container {
+    .login-card-wrapper {
+      grid-template-columns: 1fr;
+      gap: 20px;
+
+      .info-section {
+        display: none;
+      }
+    }
+  }
+}
+
+// Dark theme support
+.dark-theme {
+  .login-card {
+    mat-card-header {
+      .header-content {
+        mat-card-subtitle {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+    }
+
+    .login-form {
+      .form-footer {
+        p {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+    }
+  }
+}

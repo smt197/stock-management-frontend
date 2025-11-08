@@ -5,6 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ProductService } from '../../../core/services/product.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Product } from '../../../shared/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,10 +17,19 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
   standalone: true,
   imports: [SharedModule, RouterModule],
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.scss']
+  styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['sku', 'name', 'category', 'quantity', 'unit_price', 'status', 'actions'];
+  displayedColumns: string[] = [
+    'image',
+    'sku',
+    'name',
+    'category',
+    'quantity',
+    'unit_price',
+    'status',
+    'actions',
+  ];
   dataSource = new MatTableDataSource<Product>([]);
   totalRecords = signal(0);
   loading = signal(true);
@@ -34,7 +44,8 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     private productService: ProductService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -65,7 +76,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     this.loading.set(true);
     const params = {
       page: this.pageIndex + 1, // Backend utilise généralement page 1-based
-      limit: this.pageSize
+      limit: this.pageSize,
     };
     this.productService.getAll(params).subscribe({
       next: (response) => {
@@ -77,7 +88,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
         console.error('Error loading products:', error);
         this.snackBar.open('Erreur lors du chargement des produits', 'Fermer', { duration: 3000 });
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -90,10 +101,10 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(ProductFormComponent, {
       width: '800px',
       maxHeight: '90vh',
-      data: { mode: 'create' }
+      data: { mode: 'create' },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadProducts();
       }
@@ -104,10 +115,10 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(ProductFormComponent, {
       width: '800px',
       maxHeight: '90vh',
-      data: { mode: 'edit', product }
+      data: { mode: 'edit', product },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadProducts();
       }
@@ -126,11 +137,11 @@ export class ProductListComponent implements OnInit, AfterViewInit {
         message: `Êtes-vous sûr de vouloir supprimer le produit "${product.name}" ? Cette action est irréversible.`,
         confirmText: 'Supprimer',
         cancelText: 'Annuler',
-        type: 'danger'
-      }
+        type: 'danger',
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.productService.delete(product.id).subscribe({
           next: () => {
@@ -138,19 +149,32 @@ export class ProductListComponent implements OnInit, AfterViewInit {
             this.loadProducts();
           },
           error: (error) => {
-            this.snackBar.open('Erreur lors de la suppression du produit', 'Fermer', { duration: 3000 });
-          }
+            this.snackBar.open('Erreur lors de la suppression du produit', 'Fermer', {
+              duration: 3000,
+            });
+          },
         });
       }
     });
   }
 
   getStatusColor(status: string): string {
-    switch(status) {
-      case 'active': return 'primary';
-      case 'inactive': return 'warn';
-      case 'discontinued': return 'accent';
-      default: return '';
+    switch (status) {
+      case 'active':
+        return 'primary';
+      case 'inactive':
+        return 'warn';
+      case 'discontinued':
+        return 'accent';
+      default:
+        return '';
     }
+  }
+
+  getImageUrl(product: Product): string | null {
+    if (product.image) {
+      return `http://localhost:8000/storage/${product.image}`;
+    }
+    return product.image_url || null;
   }
 }

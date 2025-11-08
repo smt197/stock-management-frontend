@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { SupplierService } from '../../../core/services/supplier.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Supplier } from '../../../shared/models/supplier.model';
 import { SupplierForm } from '../supplier-form/supplier-form';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -48,7 +49,8 @@ export class SupplierList implements OnInit, AfterViewInit {
   constructor(
     private supplierService: SupplierService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {

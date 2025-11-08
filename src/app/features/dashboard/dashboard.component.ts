@@ -8,6 +8,7 @@ import { CategoryService } from '../../core/services/category.service';
 import { Product } from '../../shared/models/product.model';
 import { StockMovement } from '../../shared/models/stock-movement.model';
 import { StockMovementFormComponent } from '../stock-movements/stock-movement-form/stock-movement-form.component';
+import { ProductFormComponent } from '../products/product-form/product-form.component';
 import { forkJoin } from 'rxjs';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
@@ -33,14 +34,14 @@ interface ActivityItem {
   standalone: true,
   imports: [SharedModule, RouterModule, BaseChartDirective],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
   stats = signal<DashboardStats>({
     totalProducts: 0,
     lowStockProducts: 0,
     totalValue: 0,
-    recentMovements: 0
+    recentMovements: 0,
   });
 
   recentActivities = signal<ActivityItem[]>([]);
@@ -52,14 +53,16 @@ export class DashboardComponent implements OnInit {
   public readonly doughnutChartType = 'doughnut' as const;
   public doughnutChartData = signal<ChartData<'doughnut'>>({
     labels: ['Stock Normal', 'Stock Bas', 'Rupture de Stock'],
-    datasets: [{
-      data: [0, 0, 0],
-      backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
-      borderColor: ['#388e3c', '#f57c00', '#d32f2f'],
-      borderWidth: 2,
-      hoverBackgroundColor: ['#66bb6a', '#ffa726', '#ef5350'],
-      hoverBorderWidth: 3
-    }]
+    datasets: [
+      {
+        data: [0, 0, 0],
+        backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+        borderColor: ['#388e3c', '#f57c00', '#d32f2f'],
+        borderWidth: 2,
+        hoverBackgroundColor: ['#66bb6a', '#ffa726', '#ef5350'],
+        hoverBorderWidth: 3,
+      },
+    ],
   });
 
   public doughnutChartOptions: ChartConfiguration<'doughnut'>['options'] = {
@@ -71,9 +74,9 @@ export class DashboardComponent implements OnInit {
         labels: {
           padding: 20,
           font: {
-            size: 12
-          }
-        }
+            size: 12,
+          },
+        },
       },
       tooltip: {
         callbacks: {
@@ -83,24 +86,26 @@ export class DashboardComponent implements OnInit {
             const total = (context.dataset.data as number[]).reduce((a, b) => a + b, 0);
             const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0';
             return `${label}: ${value} produits (${percentage}%)`;
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   };
 
   public readonly barChartType = 'bar' as const;
   public barChartData = signal<ChartData<'bar'>>({
     labels: [],
-    datasets: [{
-      label: 'Nombre de produits',
-      data: [],
-      backgroundColor: '#1976d2',
-      borderColor: '#1565c0',
-      borderWidth: 1,
-      hoverBackgroundColor: '#2196f3',
-      borderRadius: 4
-    }]
+    datasets: [
+      {
+        label: 'Nombre de produits',
+        data: [],
+        backgroundColor: '#1976d2',
+        borderColor: '#1565c0',
+        borderWidth: 1,
+        hoverBackgroundColor: '#2196f3',
+        borderRadius: 4,
+      },
+    ],
   });
 
   public barChartOptions: ChartConfiguration<'bar'>['options'] = {
@@ -110,22 +115,22 @@ export class DashboardComponent implements OnInit {
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: 1
-        }
-      }
+          stepSize: 1,
+        },
+      },
     },
     plugins: {
       legend: {
-        display: false
+        display: false,
       },
       tooltip: {
         callbacks: {
           label: (context) => {
             return `${context.parsed.y} produit(s)`;
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   };
 
   public readonly lineChartType = 'line' as const;
@@ -140,7 +145,7 @@ export class DashboardComponent implements OnInit {
         fill: true,
         tension: 0.4,
         pointRadius: 4,
-        pointHoverRadius: 6
+        pointHoverRadius: 6,
       },
       {
         label: 'Sorties',
@@ -150,9 +155,9 @@ export class DashboardComponent implements OnInit {
         fill: true,
         tension: 0.4,
         pointRadius: 4,
-        pointHoverRadius: 6
-      }
-    ]
+        pointHoverRadius: 6,
+      },
+    ],
   });
 
   public lineChartOptions: ChartConfiguration<'line'>['options'] = {
@@ -162,23 +167,23 @@ export class DashboardComponent implements OnInit {
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: 1
-        }
-      }
+          stepSize: 1,
+        },
+      },
     },
     plugins: {
       legend: {
         position: 'top',
         labels: {
           padding: 20,
-          usePointStyle: true
-        }
+          usePointStyle: true,
+        },
       },
       tooltip: {
         mode: 'index',
-        intersect: false
-      }
-    }
+        intersect: false,
+      },
+    },
   };
 
   constructor(
@@ -202,7 +207,7 @@ export class DashboardComponent implements OnInit {
     forkJoin({
       products: this.productService.getAll(allDataParams),
       movements: this.stockMovementService.getAll(allDataParams),
-      categories: this.categoryService.getAll()
+      categories: this.categoryService.getAll(),
     }).subscribe({
       next: ({ products, movements, categories }) => {
         const productsList = products.data;
@@ -210,34 +215,36 @@ export class DashboardComponent implements OnInit {
         const categoriesList = categories.data || [];
 
         // Calculate stats using the total from backend (plus précis)
-        const totalValue = productsList.reduce((sum, p) => sum + (p.unit_price * p.quantity), 0);
-        const lowStock = productsList.filter(p => p.quantity <= p.min_quantity && p.quantity > 0);
-        const outOfStock = productsList.filter(p => p.quantity === 0);
-        const normalStock = productsList.filter(p => p.quantity > p.min_quantity);
+        const totalValue = productsList.reduce((sum, p) => sum + p.unit_price * p.quantity, 0);
+        const lowStock = productsList.filter((p) => p.quantity <= p.min_quantity && p.quantity > 0);
+        const outOfStock = productsList.filter((p) => p.quantity === 0);
+        const normalStock = productsList.filter((p) => p.quantity > p.min_quantity);
 
         this.stats.set({
           totalProducts: products.total, // Utilise le total du backend
           lowStockProducts: lowStock.length,
           totalValue: totalValue,
-          recentMovements: movements.total // Utilise le total du backend
+          recentMovements: movements.total, // Utilise le total du backend
         });
 
         // Update doughnut chart (Stock Status)
         this.doughnutChartData.set({
           labels: ['Stock Normal', 'Stock Bas', 'Rupture de Stock'],
-          datasets: [{
-            data: [normalStock.length, lowStock.length, outOfStock.length],
-            backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
-            borderColor: ['#388e3c', '#f57c00', '#d32f2f'],
-            borderWidth: 2,
-            hoverBackgroundColor: ['#66bb6a', '#ffa726', '#ef5350'],
-            hoverBorderWidth: 3
-          }]
+          datasets: [
+            {
+              data: [normalStock.length, lowStock.length, outOfStock.length],
+              backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+              borderColor: ['#388e3c', '#f57c00', '#d32f2f'],
+              borderWidth: 2,
+              hoverBackgroundColor: ['#66bb6a', '#ffa726', '#ef5350'],
+              hoverBorderWidth: 3,
+            },
+          ],
         });
 
         // Update bar chart (Products by Category)
         const categoryMap = new Map<string, number>();
-        productsList.forEach(product => {
+        productsList.forEach((product) => {
           const categoryName = product.category?.name || 'Sans catégorie';
           categoryMap.set(categoryName, (categoryMap.get(categoryName) || 0) + 1);
         });
@@ -247,15 +254,17 @@ export class DashboardComponent implements OnInit {
 
         this.barChartData.set({
           labels: categoryLabels,
-          datasets: [{
-            label: 'Nombre de produits',
-            data: categoryData,
-            backgroundColor: '#1976d2',
-            borderColor: '#1565c0',
-            borderWidth: 1,
-            hoverBackgroundColor: '#2196f3',
-            borderRadius: 4
-          }]
+          datasets: [
+            {
+              label: 'Nombre de produits',
+              data: categoryData,
+              backgroundColor: '#1976d2',
+              borderColor: '#1565c0',
+              borderWidth: 1,
+              hoverBackgroundColor: '#2196f3',
+              borderRadius: 4,
+            },
+          ],
         });
 
         // Update line chart (Stock Movements over last 7 days)
@@ -263,21 +272,25 @@ export class DashboardComponent implements OnInit {
         const entriesData: number[] = [];
         const exitsData: number[] = [];
 
-        last7Days.forEach(day => {
-          const dayMovements = movementsList.filter(m => {
+        last7Days.forEach((day) => {
+          const dayMovements = movementsList.filter((m) => {
             const movementDate = new Date(m.created_at || '').toDateString();
             return movementDate === day.date.toDateString();
           });
 
-          const entries = dayMovements.filter(m => m.type === 'in').reduce((sum, m) => sum + m.quantity, 0);
-          const exits = dayMovements.filter(m => m.type === 'out').reduce((sum, m) => sum + m.quantity, 0);
+          const entries = dayMovements
+            .filter((m) => m.type === 'in')
+            .reduce((sum, m) => sum + m.quantity, 0);
+          const exits = dayMovements
+            .filter((m) => m.type === 'out')
+            .reduce((sum, m) => sum + m.quantity, 0);
 
           entriesData.push(entries);
           exitsData.push(exits);
         });
 
         this.lineChartData.set({
-          labels: last7Days.map(d => d.label),
+          labels: last7Days.map((d) => d.label),
           datasets: [
             {
               label: 'Entrées',
@@ -287,7 +300,7 @@ export class DashboardComponent implements OnInit {
               fill: true,
               tension: 0.4,
               pointRadius: 4,
-              pointHoverRadius: 6
+              pointHoverRadius: 6,
             },
             {
               label: 'Sorties',
@@ -297,26 +310,28 @@ export class DashboardComponent implements OnInit {
               fill: true,
               tension: 0.4,
               pointRadius: 4,
-              pointHoverRadius: 6
-            }
-          ]
+              pointHoverRadius: 6,
+            },
+          ],
         });
 
         // Set low stock products
         this.lowStockProducts.set(lowStock.slice(0, 5)); // Top 5 low stock
 
         // Set recent movements
-        const sortedMovements = [...movementsList].sort((a, b) =>
-          new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
+        const sortedMovements = [...movementsList].sort(
+          (a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
         );
 
-        this.recentMovements.set(sortedMovements.slice(0, 5).map(m => ({
-          ...m,
-          productName: this.getProductName(m.product_id, productsList)
-        })));
+        this.recentMovements.set(
+          sortedMovements.slice(0, 5).map((m) => ({
+            ...m,
+            productName: this.getProductName(m.product_id, productsList),
+          }))
+        );
 
         // Build recent activities from movements
-        const activities: ActivityItem[] = sortedMovements.slice(0, 4).map(movement => {
+        const activities: ActivityItem[] = sortedMovements.slice(0, 4).map((movement) => {
           const product = this.getProductName(movement.product_id, productsList);
           return {
             icon: this.getMovementIcon(movement.type),
@@ -324,7 +339,7 @@ export class DashboardComponent implements OnInit {
             title: this.getMovementTitle(movement.type),
             product: product,
             time: this.getRelativeTime(movement.created_at),
-            type: movement.type
+            type: movement.type,
           };
         });
 
@@ -334,7 +349,7 @@ export class DashboardComponent implements OnInit {
       error: (error) => {
         console.error('Error loading dashboard data:', error);
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -345,9 +360,12 @@ export class DashboardComponent implements OnInit {
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      const label = i === 0 ? 'Aujourd\'hui' :
-                    i === 1 ? 'Hier' :
-                    date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
+      const label =
+        i === 0
+          ? "Aujourd'hui"
+          : i === 1
+          ? 'Hier'
+          : date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
       days.push({ date, label });
     }
 
@@ -355,34 +373,46 @@ export class DashboardComponent implements OnInit {
   }
 
   getProductName(productId: number, products: Product[]): string {
-    const product = products.find(p => p.id === productId);
+    const product = products.find((p) => p.id === productId);
     return product ? product.name : `Produit #${productId}`;
   }
 
   getMovementIcon(type: string): string {
-    switch(type) {
-      case 'in': return 'add_circle';
-      case 'out': return 'remove_circle';
-      case 'adjustment': return 'sync';
-      default: return 'info';
+    switch (type) {
+      case 'in':
+        return 'add_circle';
+      case 'out':
+        return 'remove_circle';
+      case 'adjustment':
+        return 'sync';
+      default:
+        return 'info';
     }
   }
 
   getMovementClass(type: string): string {
-    switch(type) {
-      case 'in': return 'success';
-      case 'out': return 'warn';
-      case 'adjustment': return 'info';
-      default: return 'primary';
+    switch (type) {
+      case 'in':
+        return 'success';
+      case 'out':
+        return 'warn';
+      case 'adjustment':
+        return 'info';
+      default:
+        return 'primary';
     }
   }
 
   getMovementTitle(type: string): string {
-    switch(type) {
-      case 'in': return 'Entrée de stock';
-      case 'out': return 'Sortie de stock';
-      case 'adjustment': return 'Ajustement de stock';
-      default: return 'Mouvement';
+    switch (type) {
+      case 'in':
+        return 'Entrée de stock';
+      case 'out':
+        return 'Sortie de stock';
+      case 'adjustment':
+        return 'Ajustement de stock';
+      default:
+        return 'Mouvement';
     }
   }
 
@@ -396,7 +426,7 @@ export class DashboardComponent implements OnInit {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'À l\'instant';
+    if (diffMins < 1) return "À l'instant";
     if (diffMins < 60) return `Il y a ${diffMins} minute${diffMins > 1 ? 's' : ''}`;
     if (diffHours < 24) return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`;
     if (diffDays === 1) return 'Hier';
@@ -406,32 +436,54 @@ export class DashboardComponent implements OnInit {
   }
 
   getMovementTypeLabel(type: string): string {
-    switch(type) {
-      case 'in': return 'Entrée';
-      case 'out': return 'Sortie';
-      case 'adjustment': return 'Ajustement';
-      default: return type;
+    switch (type) {
+      case 'in':
+        return 'Entrée';
+      case 'out':
+        return 'Sortie';
+      case 'adjustment':
+        return 'Ajustement';
+      default:
+        return type;
     }
   }
 
   getMovementTypeColor(type: string): string {
-    switch(type) {
-      case 'in': return 'primary';
-      case 'out': return 'warn';
-      case 'adjustment': return 'accent';
-      default: return '';
+    switch (type) {
+      case 'in':
+        return 'primary';
+      case 'out':
+        return 'warn';
+      case 'adjustment':
+        return 'accent';
+      default:
+        return '';
     }
   }
 
   openNewMovementDialog(): void {
     const dialogRef = this.dialog.open(StockMovementFormComponent, {
       width: '600px',
-      data: { mode: 'create' }
+      data: { mode: 'create' },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // Reload dashboard data after creating a movement
+        this.loadDashboardData();
+      }
+    });
+  }
+
+  openNewProductDialog(): void {
+    const dialogRef = this.dialog.open(ProductFormComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      data: { mode: 'create' },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
         this.loadDashboardData();
       }
     });

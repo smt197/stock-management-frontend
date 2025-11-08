@@ -27,8 +27,9 @@
         <div class="user-menu-header">
           <mat-icon class="user-avatar">account_circle</mat-icon>
           <div class="user-info">
-            <div class="user-name">Administrateur</div>
-            <div class="user-email">admin@stock.com</div>
+            <div class="user-name">{{ currentUser()?.name || 'Utilisateur' }}</div>
+            <div class="user-email">{{ currentUser()?.email || '' }}</div>
+            <div class="user-role">{{ currentUser()?.role || 'user' }}</div>
           </div>
         </div>
         <mat-divider></mat-divider>
@@ -41,7 +42,7 @@
           <span>Paramètres</span>
         </button>
         <mat-divider></mat-divider>
-        <button mat-menu-item class="logout-button">
+        <button mat-menu-item class="logout-button" (click)="logout()">
           <mat-icon>logout</mat-icon>
           <span>Déconnexion</span>
         </button>

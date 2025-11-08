@@ -12,10 +12,12 @@
           </mat-card-subtitle>
         </div>
         <div class="header-actions">
-          <button mat-raised-button color="primary" (click)="openAddDialog()">
-            <mat-icon>add</mat-icon>
-            Nouvelle Catégorie
-          </button>
+          @if (authService.canCreate()) {
+            <button mat-raised-button color="primary" (click)="openAddDialog()">
+              <mat-icon>add</mat-icon>
+              Nouvelle Catégorie
+            </button>
+          }
         </div>
       </div>
     </mat-card-header>
@@ -73,16 +75,20 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef> Actions </th>
             <td mat-cell *matCellDef="let category">
-              <button mat-icon-button color="primary"
-                      (click)="openEditDialog(category)"
-                      matTooltip="Modifier">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn"
-                      (click)="deleteCategory(category)"
-                      matTooltip="Supprimer">
-                <mat-icon>delete</mat-icon>
-              </button>
+              @if (authService.canUpdate()) {
+                <button mat-icon-button color="primary"
+                        (click)="openEditDialog(category)"
+                        matTooltip="Modifier">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              }
+              @if (authService.canDelete()) {
+                <button mat-icon-button color="warn"
+                        (click)="deleteCategory(category)"
+                        matTooltip="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
             </td>
           </ng-container>
 
@@ -95,9 +101,11 @@
               <div class="no-data">
                 <mat-icon>inbox</mat-icon>
                 <p>Aucune catégorie trouvée</p>
-                <button mat-raised-button color="primary" (click)="openAddDialog()">
-                  Créer une catégorie
-                </button>
+                @if (authService.canCreate()) {
+                  <button mat-raised-button color="primary" (click)="openAddDialog()">
+                    Créer une catégorie
+                  </button>
+                }
               </div>
             </td>
           </tr>

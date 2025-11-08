@@ -99,7 +99,7 @@
       Actions Rapides
     </h3>
     <div class="quick-actions-grid">
-      <mat-card class="quick-action-card" [routerLink]="['/products/new']">
+      <mat-card class="quick-action-card" (click)="openNewProductDialog()" style="cursor: pointer">
         <mat-icon>add_box</mat-icon>
         <span>Ajouter Produit</span>
       </mat-card>

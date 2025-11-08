@@ -79,6 +79,83 @@ mat-dialog-content {
       color: rgba(0, 0, 0, 0.54);
     }
   }
+
+  .image-upload-section {
+    margin-bottom: 16px;
+
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.7);
+      margin-bottom: 12px;
+    }
+
+    .image-upload-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+
+      .image-preview {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        border: 2px dashed #1976d2;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #f5f5f5;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .remove-image-btn {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          background-color: rgba(255, 255, 255, 0.9);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+          &:hover {
+            background-color: white;
+          }
+        }
+      }
+
+      .upload-placeholder {
+        width: 200px;
+        height: 200px;
+        border: 2px dashed rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #fafafa;
+        color: rgba(0, 0, 0, 0.4);
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          margin-bottom: 8px;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.9rem;
+        }
+      }
+
+      .hint-text {
+        color: rgba(0, 0, 0, 0.54);
+        font-size: 0.85rem;
+        text-align: center;
+      }
+    }
+  }
 }
 
 mat-dialog-actions {

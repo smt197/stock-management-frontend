@@ -2,6 +2,8 @@ import { Component, signal, OnInit, computed } from '@angular/core';
 import { SharedModule } from '../../shared.module';
 import { RouterModule } from '@angular/router';
 import { StockMovementService } from '../../../core/services/stock-movement.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { User } from '../../models';
 
 @Component({
   selector: 'app-layout',
@@ -14,6 +16,7 @@ export class LayoutComponent implements OnInit {
   sidenavOpened = signal(true);
   isDarkTheme = signal(false);
   recentMovementsCount = signal(0);
+  currentUser = signal<User | null>(null);
 
   menuItems = computed(() => [
     { icon: 'dashboard', label: 'Dashboard', route: '/dashboard', badge: null, badgeType: null },
@@ -30,12 +33,21 @@ export class LayoutComponent implements OnInit {
     { icon: 'assessment', label: 'Rapports', route: '/reports', badge: null, badgeType: null },
   ]);
 
-  constructor(private stockMovementService: StockMovementService) {}
+  constructor(
+    private stockMovementService: StockMovementService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadRecentMovements();
+    this.loadCurrentUser();
     // Reload every 5 minutes
     setInterval(() => this.loadRecentMovements(), 5 * 60 * 1000);
+  }
+
+  loadCurrentUser(): void {
+    const user = this.authService.getUser();
+    this.currentUser.set(user);
   }
 
   loadRecentMovements(): void {
@@ -63,5 +75,18 @@ export class LayoutComponent implements OnInit {
   toggleTheme() {
     this.isDarkTheme.update(value => !value);
     document.body.classList.toggle('dark-theme');
+  }
+
+  logout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        // La navigation est gérée dans le service auth
+      },
+      error: (error) => {
+        console.error('Erreur lors de la déconnexion:', error);
+        // Même en cas d'erreur, on déconnecte côté client
+        this.authService['clearAuthData']();
+      }
+    });
   }
 }

@@ -22,121 +22,109 @@
       </div>
     </div>
 
-    <div class="detail-content">
-      <!-- Informations générales -->
-      <mat-card class="info-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>info</mat-icon>
-            Informations générales
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="label">SKU</span>
-              <span class="value">{{ product()?.sku }}</span>
+    <div class="detail-grid">
+      <!-- Colonne principale (plus large) -->
+      <div class="main-column">
+        <!-- Informations générales -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>info</mat-icon>
+              Informations générales
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">SKU</span>
+                <span class="value">{{ product()?.sku }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Code-barres</span>
+                <span class="value">{{ product()?.barcode || 'N/A' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Catégorie</span>
+                <span class="value">{{ product()?.category?.name || 'N/A' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Fournisseur</span>
+                <span class="value">{{ product()?.supplier?.name || 'N/A' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Statut</span>
+                <span class="value">
+                  <mat-chip [class]="'chip-status-' + product()?.status" [highlighted]="true">
+                    {{ getStatusLabel(product()?.status || '') }}
+                  </mat-chip>
+                </span>
+              </div>
             </div>
-            <div class="info-item">
-              <span class="label">Code-barres</span>
-              <span class="value">{{ product()?.barcode || 'N/A' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">Catégorie</span>
-              <span class="value">{{ product()?.category?.name || 'N/A' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">Fournisseur</span>
-              <span class="value">{{ product()?.supplier?.name || 'N/A' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">Statut</span>
-              <span class="value">
-                <mat-chip [class]="'chip-status-' + product()?.status" [highlighted]="true">
-                  {{ getStatusLabel(product()?.status || '') }}
-                </mat-chip>
-              </span>
-            </div>
-          </div>
 
-          @if (product()?.description) {
-            <div class="description-section">
-              <h3>Description</h3>
-              <p>{{ product()?.description }}</p>
-            </div>
-          }
-        </mat-card-content>
-      </mat-card>
+            @if (product()?.description) {
+              <div class="description-section">
+                <h3>Description</h3>
+                <p>{{ product()?.description }}</p>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
 
-      <!-- Prix et coûts -->
-      <mat-card class="info-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>euro</mat-icon>
-            Prix et coûts
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="label">Prix unitaire</span>
-              <span class="value price">{{ product()?.unit_price | currency:'EUR' }}</span>
+        <!-- Prix et coûts -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>euro</mat-icon>
+              Prix et coûts
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Prix unitaire</span>
+                <span class="value price">{{ product()?.unit_price | currency:'EUR' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Prix de revient</span>
+                <span class="value">{{ product()?.cost_price | currency:'EUR' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Marge</span>
+                <span class="value profit">
+                  {{ (product()!.unit_price - product()!.cost_price) | currency:'EUR' }}
+                  ({{ ((product()!.unit_price - product()!.cost_price) / product()!.cost_price * 100).toFixed(2) }}%)
+                </span>
+              </div>
             </div>
-            <div class="info-item">
-              <span class="label">Prix de revient</span>
-              <span class="value">{{ product()?.cost_price | currency:'EUR' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">Marge</span>
-              <span class="value profit">
-                {{ (product()!.unit_price - product()!.cost_price) | currency:'EUR' }}
-                ({{ ((product()!.unit_price - product()!.cost_price) / product()!.cost_price * 100).toFixed(2) }}%)
-              </span>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+          </mat-card-content>
+        </mat-card>
 
-      <!-- Stock -->
-      <mat-card class="info-card" [class.low-stock-card]="isLowStock()">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>inventory</mat-icon>
-            Gestion du stock
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="label">Quantité en stock</span>
-              <span class="value stock-quantity" [class.low-stock]="isLowStock()">
-                {{ product()?.quantity }}
-                @if (isLowStock()) {
-                  <mat-icon class="warning-icon">warning</mat-icon>
-                }
-              </span>
+        <!-- Dates -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>schedule</mat-icon>
+              Informations système
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Date de création</span>
+                <span class="value">{{ product()?.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Dernière modification</span>
+                <span class="value">{{ product()?.updated_at | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
             </div>
-            <div class="info-item">
-              <span class="label">Stock minimum</span>
-              <span class="value">{{ product()?.min_quantity }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">Stock maximum</span>
-              <span class="value">{{ product()?.max_quantity || 'N/A' }}</span>
-            </div>
-          </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
 
-          @if (isLowStock()) {
-            <mat-card class="alert-card">
-              <mat-icon>warning</mat-icon>
-              <span>Stock faible ! Quantité inférieure au seuil minimum.</span>
-            </mat-card>
-          }
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Image du produit -->
-      @if (product()?.image_url) {
+      <!-- Colonne latérale (plus étroite) -->
+      <div class="side-column">
+        <!-- Image du produit -->
         <mat-card class="info-card">
           <mat-card-header>
             <mat-card-title>
@@ -146,33 +134,56 @@
           </mat-card-header>
           <mat-card-content>
             <div class="product-image">
-              <img [src]="product()?.image_url" [alt]="product()?.name" />
+              @if (getImageUrl()) {
+                <img [src]="getImageUrl()" [alt]="product()?.name" />
+              } @else {
+                <div class="no-image">
+                  <mat-icon>image_not_supported</mat-icon>
+                  <span>Aucune image</span>
+                </div>
+              }
             </div>
           </mat-card-content>
         </mat-card>
-      }
 
-      <!-- Dates -->
-      <mat-card class="info-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>schedule</mat-icon>
-            Informations système
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="label">Date de création</span>
-              <span class="value">{{ product()?.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+        <!-- Stock -->
+        <mat-card class="info-card" [class.low-stock-card]="isLowStock()">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>inventory</mat-icon>
+              Gestion du stock
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Quantité en stock</span>
+                <span class="value stock-quantity" [class.low-stock]="isLowStock()">
+                  {{ product()?.quantity }}
+                  @if (isLowStock()) {
+                    <mat-icon class="warning-icon">warning</mat-icon>
+                  }
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="label">Stock minimum</span>
+                <span class="value">{{ product()?.min_quantity }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Stock maximum</span>
+                <span class="value">{{ product()?.max_quantity || 'N/A' }}</span>
+              </div>
             </div>
-            <div class="info-item">
-              <span class="label">Dernière modification</span>
-              <span class="value">{{ product()?.updated_at | date:'dd/MM/yyyy HH:mm' }}</span>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+
+            @if (isLowStock()) {
+              <mat-card class="alert-card">
+                <mat-icon>warning</mat-icon>
+                <span>Stock faible ! Quantité inférieure au seuil minimum.</span>
+              </mat-card>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
   }
 </div>

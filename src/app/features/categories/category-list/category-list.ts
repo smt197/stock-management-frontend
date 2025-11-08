@@ -10,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { CategoryService } from '../../../core/services/category.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Category } from '../../../shared/models/category.model';
 import { CategoryForm } from '../category-form/category-form';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -46,7 +47,8 @@ export class CategoryList implements OnInit, AfterViewInit {
   constructor(
     private categoryService: CategoryService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {

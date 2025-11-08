@@ -12,10 +12,12 @@
           </mat-card-subtitle>
         </div>
         <div class="header-actions">
-          <button mat-raised-button color="primary" (click)="openAddDialog()">
-            <mat-icon>add</mat-icon>
-            Nouveau Mouvement
-          </button>
+          @if (authService.canCreate()) {
+            <button mat-raised-button color="primary" (click)="openAddDialog()">
+              <mat-icon>add</mat-icon>
+              Nouveau Mouvement
+            </button>
+          }
         </div>
       </div>
     </mat-card-header>

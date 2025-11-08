@@ -19,12 +19,13 @@ export class ProductService {
     return this.apiService.get<{ success: boolean, data: Product }>(`${this.endpoint}/${id}`);
   }
 
-  create(product: ProductCreateDto): Observable<{ success: boolean, message: string, data: Product }> {
+  create(product: ProductCreateDto | FormData): Observable<{ success: boolean, message: string, data: Product }> {
     return this.apiService.post<{ success: boolean, message: string, data: Product }>(this.endpoint, product);
   }
 
-  update(id: number, product: ProductUpdateDto): Observable<{ success: boolean, message: string, data: Product }> {
-    return this.apiService.put<{ success: boolean, message: string, data: Product }>(`${this.endpoint}/${id}`, product);
+  update(id: number, product: ProductUpdateDto | FormData): Observable<{ success: boolean, message: string, data: Product }> {
+    // Use POST for updates with FormData to support method spoofing (_method: 'PUT')
+    return this.apiService.post<{ success: boolean, message: string, data: Product }>(`${this.endpoint}/${id}`, product);
   }
 
   delete(id: number): Observable<{ success: boolean, message: string }> {
