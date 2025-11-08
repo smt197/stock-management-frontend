@@ -183,15 +183,17 @@
           <mat-icon>pie_chart</mat-icon>
           État du Stock
         </mat-card-title>
-        <button mat-icon-button>
-          <mat-icon>more_vert</mat-icon>
+        <button mat-icon-button matTooltip="Actualiser" (click)="loadDashboardData()">
+          <mat-icon>refresh</mat-icon>
         </button>
       </mat-card-header>
       <mat-card-content>
-        <div class="chart-placeholder">
-          <mat-icon class="placeholder-icon">show_chart</mat-icon>
-          <p class="placeholder-text">Graphique à implémenter</p>
-          <p class="placeholder-subtext">Utilisez ng2-charts pour ajouter des graphiques interactifs</p>
+        <div class="chart-container">
+          <canvas baseChart
+            [type]="doughnutChartType"
+            [data]="doughnutChartData()"
+            [options]="doughnutChartOptions">
+          </canvas>
         </div>
       </mat-card-content>
     </mat-card>
@@ -237,6 +239,53 @@
       <mat-card-actions align="end">
         <button mat-button color="warn" [routerLink]="['/products']">Voir les Produits</button>
       </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Additional Charts Section -->
+  <div class="charts-section">
+    <!-- Products by Category Chart -->
+    <mat-card class="chart-card-large modern-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>bar_chart</mat-icon>
+          Produits par Catégorie
+        </mat-card-title>
+        <button mat-icon-button matTooltip="Actualiser" (click)="loadDashboardData()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container-large">
+          <canvas baseChart
+            [type]="barChartType"
+            [data]="barChartData()"
+            [options]="barChartOptions">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Stock Movements Trend Chart -->
+    <mat-card class="chart-card-large modern-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>timeline</mat-icon>
+          Mouvements de Stock (7 derniers jours)
+        </mat-card-title>
+        <button mat-icon-button matTooltip="Actualiser" (click)="loadDashboardData()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container-large">
+          <canvas baseChart
+            [type]="lineChartType"
+            [data]="lineChartData()"
+            [options]="lineChartOptions">
+          </canvas>
+        </div>
+      </mat-card-content>
     </mat-card>
   </div>
 }

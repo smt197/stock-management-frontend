@@ -15,20 +15,20 @@ export class ProductService {
     return this.apiService.get<{ data: Product[], total: number }>(this.endpoint, params);
   }
 
-  getById(id: number): Observable<Product> {
-    return this.apiService.get<Product>(`${this.endpoint}/${id}`);
+  getById(id: number): Observable<{ success: boolean, data: Product }> {
+    return this.apiService.get<{ success: boolean, data: Product }>(`${this.endpoint}/${id}`);
   }
 
-  create(product: ProductCreateDto): Observable<Product> {
-    return this.apiService.post<Product>(this.endpoint, product);
+  create(product: ProductCreateDto): Observable<{ success: boolean, message: string, data: Product }> {
+    return this.apiService.post<{ success: boolean, message: string, data: Product }>(this.endpoint, product);
   }
 
-  update(id: number, product: ProductUpdateDto): Observable<Product> {
-    return this.apiService.put<Product>(`${this.endpoint}/${id}`, product);
+  update(id: number, product: ProductUpdateDto): Observable<{ success: boolean, message: string, data: Product }> {
+    return this.apiService.put<{ success: boolean, message: string, data: Product }>(`${this.endpoint}/${id}`, product);
   }
 
-  delete(id: number): Observable<void> {
-    return this.apiService.delete<void>(`${this.endpoint}/${id}`);
+  delete(id: number): Observable<{ success: boolean, message: string }> {
+    return this.apiService.delete<{ success: boolean, message: string }>(`${this.endpoint}/${id}`);
   }
 
   getLowStock(): Observable<Product[]> {

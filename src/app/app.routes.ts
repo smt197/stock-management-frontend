@@ -18,12 +18,8 @@ export const routes: Routes = [
             loadComponent: () => import('./features/products/product-list/product-list.component').then(m => m.ProductListComponent)
           },
           {
-            path: 'new',
-            loadComponent: () => import('./features/products/product-list/product-list.component').then(m => m.ProductListComponent)
-          },
-          {
             path: ':id',
-            loadComponent: () => import('./features/products/product-list/product-list.component').then(m => m.ProductListComponent)
+            loadComponent: () => import('./features/products/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
           }
         ]
       },

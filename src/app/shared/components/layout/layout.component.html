@@ -11,8 +11,8 @@
     </div>
 
     <div class="toolbar-right">
-      <button mat-icon-button matTooltip="Notifications">
-        <mat-icon [matBadge]="3" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+      <button mat-icon-button matTooltip="Notifications" aria-label="Notifications, 3 non lues">
+        <mat-icon [matBadge]="3" matBadgeColor="warn" matBadgeSize="small" aria-hidden="false">notifications</mat-icon>
       </button>
 
       <button mat-icon-button (click)="toggleTheme()" [matTooltip]="isDarkTheme() ? 'Mode Clair' : 'Mode Sombre'">
