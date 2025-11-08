@@ -1,15 +1,24 @@
-<div class="page-header">
-  <h1>Gestion des Produits</h1>
-  <button mat-raised-button color="primary" (click)="addProduct()">
-    <mat-icon>add</mat-icon>
-    Nouveau Produit
-  </button>
-</div>
-
-<mat-card class="table-card">
-  <mat-card-header>
-    <mat-card-title>Liste des Produits</mat-card-title>
-  </mat-card-header>
+<div class="product-list-container">
+  <mat-card class="table-card">
+    <mat-card-header>
+      <div class="header-content">
+        <div class="header-left">
+          <mat-card-title>
+            <mat-icon>inventory_2</mat-icon>
+            Gestion des Produits
+          </mat-card-title>
+          <mat-card-subtitle>
+            {{ totalRecords() }} produit(s) au total
+          </mat-card-subtitle>
+        </div>
+        <div class="header-actions">
+          <button mat-raised-button color="primary" (click)="addProduct()">
+            <mat-icon>add</mat-icon>
+            Nouveau Produit
+          </button>
+        </div>
+      </div>
+    </mat-card-header>
 
   <mat-card-content>
     <div class="table-toolbar">
@@ -41,13 +50,13 @@
 
           <!-- Category Column -->
           <ng-container matColumnDef="category">
-            <th mat-header-cell *matHeaderCellDef>Cat\u00e9gorie</th>
-            <td mat-cell *matCellDef="let product">{{ product.category_id }}</td>
+            <th mat-header-cell *matHeaderCellDef>Categorie</th>
+            <td mat-cell *matCellDef="let product">{{ product.category?.name || 'N/A' }}</td>
           </ng-container>
 
           <!-- Quantity Column -->
           <ng-container matColumnDef="quantity">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Quantit\u00e9</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Quantité</th>
             <td mat-cell *matCellDef="let product">
               <span [class.low-stock]="product.quantity <= product.min_quantity">
                 {{ product.quantity }}
@@ -101,13 +110,14 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
       </div>
-
-      <mat-paginator
-        [pageSizeOptions]="[10, 25, 50, 100]"
-        [pageSize]="10"
-        [length]="totalRecords()"
-        showFirstLastButtons>
-      </mat-paginator>
     }
+
+    <mat-paginator
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      [pageSize]="10"
+      [length]="totalRecords()"
+      showFirstLastButtons>
+    </mat-paginator>
   </mat-card-content>
-</mat-card>
+  </mat-card>
+</div>

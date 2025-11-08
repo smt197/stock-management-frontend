@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, signal, ViewChild } from '@angular/core';
 import { SharedModule } from '../../../shared/shared.module';
 import { RouterModule, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
@@ -18,11 +18,14 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss']
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['sku', 'name', 'category', 'quantity', 'unit_price', 'status', 'actions'];
   dataSource = new MatTableDataSource<Product>([]);
   totalRecords = signal(0);
   loading = signal(true);
+
+  pageIndex = 0;
+  pageSize = 10;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -39,19 +42,39 @@ export class ProductListComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    // Pagination côté serveur - on ne lie pas le paginator au dataSource
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
+
+    // Écouter les changements de pagination avec un délai pour s'assurer que le paginator est initialisé
+    setTimeout(() => {
+      if (this.paginator) {
+        this.paginator.page.subscribe((event) => {
+          this.pageIndex = this.paginator.pageIndex;
+          this.pageSize = this.paginator.pageSize;
+          this.loadProducts();
+        });
+      } else {
+        console.error('Paginator is not available');
+      }
+    }, 0);
   }
 
   loadProducts() {
     this.loading.set(true);
-    this.productService.getAll().subscribe({
+    const params = {
+      page: this.pageIndex + 1, // Backend utilise généralement page 1-based
+      limit: this.pageSize
+    };
+    this.productService.getAll(params).subscribe({
       next: (response) => {
         this.dataSource.data = response.data;
         this.totalRecords.set(response.total);
         this.loading.set(false);
       },
       error: (error) => {
+        console.error('Error loading products:', error);
         this.snackBar.open('Erreur lors du chargement des produits', 'Fermer', { duration: 3000 });
         this.loading.set(false);
       }

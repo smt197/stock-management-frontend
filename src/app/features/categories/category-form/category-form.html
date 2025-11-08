@@ -5,48 +5,72 @@
 
 <mat-dialog-content>
   <form [formGroup]="categoryForm" class="category-form">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Nom de la catégorie</mat-label>
-      <input matInput formControlName="name" placeholder="Ex: Électronique" required>
-      <mat-icon matPrefix>label</mat-icon>
-      <mat-error *ngIf="categoryForm.get('name')?.hasError('required')">
-        Le nom est requis
-      </mat-error>
-      <mat-error *ngIf="categoryForm.get('name')?.hasError('maxlength')">
-        Maximum 255 caractères
-      </mat-error>
-    </mat-form-field>
+    <!-- Section: Informations de base -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>info</mat-icon>
+        Informations de base
+      </h3>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Description</mat-label>
-      <textarea matInput formControlName="description"
-                placeholder="Description de la catégorie"
-                rows="3"></textarea>
-      <mat-icon matPrefix>description</mat-icon>
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nom de la catégorie</mat-label>
+        <input matInput formControlName="name" placeholder="Ex: Électronique" required>
+        <mat-icon matPrefix>label</mat-icon>
+        <mat-error *ngIf="categoryForm.get('name')?.hasError('required')">
+          Le nom est requis
+        </mat-error>
+        <mat-error *ngIf="categoryForm.get('name')?.hasError('maxlength')">
+          Maximum 255 caractères
+        </mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Catégorie parente</mat-label>
-      <mat-select formControlName="parent_id">
-        <mat-option [value]="null">Aucune (catégorie principale)</mat-option>
-        <mat-option *ngFor="let cat of categories" [value]="cat.id">
-          {{ cat.name }}
-        </mat-option>
-      </mat-select>
-      <mat-icon matPrefix>account_tree</mat-icon>
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description"
+                  placeholder="Description de la catégorie"
+                  rows="3"></textarea>
+        <mat-icon matPrefix>description</mat-icon>
+      </mat-form-field>
+    </div>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Statut</mat-label>
-      <mat-select formControlName="status" required>
-        <mat-option value="active">Actif</mat-option>
-        <mat-option value="inactive">Inactif</mat-option>
-      </mat-select>
-      <mat-icon matPrefix>toggle_on</mat-icon>
-      <mat-error *ngIf="categoryForm.get('status')?.hasError('required')">
-        Le statut est requis
-      </mat-error>
-    </mat-form-field>
+    <!-- Section: Hiérarchie -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>account_tree</mat-icon>
+        Hiérarchie
+      </h3>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Catégorie parente</mat-label>
+        <mat-select formControlName="parent_id">
+          <mat-option [value]="null">Aucune (catégorie principale)</mat-option>
+          <mat-option *ngFor="let cat of categories" [value]="cat.id">
+            {{ cat.name }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>account_tree</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Section: Configuration -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>settings</mat-icon>
+        Configuration
+      </h3>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="status" required>
+          <mat-option value="active">Actif</mat-option>
+          <mat-option value="inactive">Inactif</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>toggle_on</mat-icon>
+        <mat-error *ngIf="categoryForm.get('status')?.hasError('required')">
+          Le statut est requis
+        </mat-error>
+      </mat-form-field>
+    </div>
   </form>
 </mat-dialog-content>
 

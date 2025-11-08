@@ -5,7 +5,13 @@
 
 <mat-dialog-content>
   <form [formGroup]="productForm" class="product-form">
-    <div class="form-row">
+    <!-- Section: Informations générales -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>info</mat-icon>
+        Informations générales
+      </h3>
+
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Nom du produit</mat-label>
         <input matInput formControlName="name" placeholder="Ex: Ordinateur portable" required>
@@ -17,9 +23,7 @@
           Maximum 255 caractères
         </mat-error>
       </mat-form-field>
-    </div>
 
-    <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Description</mat-label>
         <textarea matInput formControlName="description"
@@ -27,112 +31,140 @@
                   rows="3"></textarea>
         <mat-icon matPrefix>description</mat-icon>
       </mat-form-field>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>SKU</mat-label>
+          <input matInput formControlName="sku" placeholder="Ex: PROD-001" required>
+          <mat-icon matPrefix>qr_code</mat-icon>
+          <mat-error *ngIf="productForm.get('sku')?.hasError('required')">
+            Le SKU est requis
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Code-barres</mat-label>
+          <input matInput formControlName="barcode" placeholder="Ex: 123456789">
+          <mat-icon matPrefix>barcode</mat-icon>
+        </mat-form-field>
+      </div>
     </div>
 
-    <div class="form-row two-columns">
-      <mat-form-field appearance="outline">
-        <mat-label>SKU</mat-label>
-        <input matInput formControlName="sku" placeholder="Ex: PROD-001" required>
-        <mat-icon matPrefix>qr_code</mat-icon>
-        <mat-error *ngIf="productForm.get('sku')?.hasError('required')">
-          Le SKU est requis
-        </mat-error>
-      </mat-form-field>
+    <!-- Section: Classification -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>category</mat-icon>
+        Classification
+      </h3>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Code-barres</mat-label>
-        <input matInput formControlName="barcode" placeholder="Ex: 123456789">
-        <mat-icon matPrefix>barcode</mat-icon>
-      </mat-form-field>
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Catégorie</mat-label>
+          <mat-select formControlName="category_id" required>
+            <mat-option *ngFor="let category of categories" [value]="category.id">
+              {{ category.name }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+          <mat-error *ngIf="productForm.get('category_id')?.hasError('required')">
+            La catégorie est requise
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fournisseur</mat-label>
+          <mat-select formControlName="supplier_id">
+            <mat-option [value]="null">Aucun</mat-option>
+            <mat-option *ngFor="let supplier of suppliers" [value]="supplier.id">
+              {{ supplier.name }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>business</mat-icon>
+        </mat-form-field>
+      </div>
     </div>
 
-    <div class="form-row two-columns">
-      <mat-form-field appearance="outline">
-        <mat-label>Catégorie</mat-label>
-        <mat-select formControlName="category_id" required>
-          <mat-option *ngFor="let category of categories" [value]="category.id">
-            {{ category.name }}
-          </mat-option>
-        </mat-select>
-        <mat-icon matPrefix>category</mat-icon>
-        <mat-error *ngIf="productForm.get('category_id')?.hasError('required')">
-          La catégorie est requise
-        </mat-error>
-      </mat-form-field>
+    <!-- Section: Prix -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>euro</mat-icon>
+        Prix
+      </h3>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Fournisseur</mat-label>
-        <mat-select formControlName="supplier_id">
-          <mat-option [value]="null">Aucun</mat-option>
-          <mat-option *ngFor="let supplier of suppliers" [value]="supplier.id">
-            {{ supplier.name }}
-          </mat-option>
-        </mat-select>
-        <mat-icon matPrefix>business</mat-icon>
-      </mat-form-field>
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Prix unitaire</mat-label>
+          <input matInput type="number" formControlName="unit_price" placeholder="0.00" required>
+          <mat-icon matPrefix>euro</mat-icon>
+          <mat-error *ngIf="productForm.get('unit_price')?.hasError('required')">
+            Le prix est requis
+          </mat-error>
+          <mat-error *ngIf="productForm.get('unit_price')?.hasError('min')">
+            Le prix doit être positif
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prix de revient</mat-label>
+          <input matInput type="number" formControlName="cost_price" placeholder="0.00" required>
+          <mat-icon matPrefix>payments</mat-icon>
+          <mat-error *ngIf="productForm.get('cost_price')?.hasError('required')">
+            Le prix de revient est requis
+          </mat-error>
+          <mat-error *ngIf="productForm.get('cost_price')?.hasError('min')">
+            Le prix doit être positif
+          </mat-error>
+        </mat-form-field>
+      </div>
     </div>
 
-    <div class="form-row two-columns">
-      <mat-form-field appearance="outline">
-        <mat-label>Prix unitaire</mat-label>
-        <input matInput type="number" formControlName="unit_price" placeholder="0.00" required>
-        <mat-icon matPrefix>euro</mat-icon>
-        <mat-error *ngIf="productForm.get('unit_price')?.hasError('required')">
-          Le prix est requis
-        </mat-error>
-        <mat-error *ngIf="productForm.get('unit_price')?.hasError('min')">
-          Le prix doit être positif
-        </mat-error>
-      </mat-form-field>
+    <!-- Section: Stock -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>inventory</mat-icon>
+        Gestion du stock
+      </h3>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Prix de revient</mat-label>
-        <input matInput type="number" formControlName="cost_price" placeholder="0.00" required>
-        <mat-icon matPrefix>payments</mat-icon>
-        <mat-error *ngIf="productForm.get('cost_price')?.hasError('required')">
-          Le prix de revient est requis
-        </mat-error>
-        <mat-error *ngIf="productForm.get('cost_price')?.hasError('min')">
-          Le prix doit être positif
-        </mat-error>
-      </mat-form-field>
+      <div class="form-row three-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Quantité</mat-label>
+          <input matInput type="number" formControlName="quantity" placeholder="0" required>
+          <mat-icon matPrefix>inventory</mat-icon>
+          <mat-error *ngIf="productForm.get('quantity')?.hasError('required')">
+            La quantité est requise
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Stock minimum</mat-label>
+          <input matInput type="number" formControlName="min_quantity" placeholder="0" required>
+          <mat-icon matPrefix>warning</mat-icon>
+          <mat-error *ngIf="productForm.get('min_quantity')?.hasError('required')">
+            Le stock minimum est requis
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Stock maximum</mat-label>
+          <input matInput type="number" formControlName="max_quantity" placeholder="0">
+          <mat-icon matPrefix>trending_up</mat-icon>
+        </mat-form-field>
+      </div>
     </div>
 
-    <div class="form-row three-columns">
-      <mat-form-field appearance="outline">
-        <mat-label>Quantité</mat-label>
-        <input matInput type="number" formControlName="quantity" placeholder="0" required>
-        <mat-icon matPrefix>inventory</mat-icon>
-        <mat-error *ngIf="productForm.get('quantity')?.hasError('required')">
-          La quantité est requise
-        </mat-error>
-      </mat-form-field>
+    <!-- Section: Autres -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>more_horiz</mat-icon>
+        Autres informations
+      </h3>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Stock minimum</mat-label>
-        <input matInput type="number" formControlName="min_quantity" placeholder="0" required>
-        <mat-icon matPrefix>warning</mat-icon>
-        <mat-error *ngIf="productForm.get('min_quantity')?.hasError('required')">
-          Le stock minimum est requis
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Stock maximum</mat-label>
-        <input matInput type="number" formControlName="max_quantity" placeholder="0">
-        <mat-icon matPrefix>trending_up</mat-icon>
-      </mat-form-field>
-    </div>
-
-    <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>URL de l'image</mat-label>
         <input matInput formControlName="image_url" placeholder="https://example.com/image.jpg">
         <mat-icon matPrefix>image</mat-icon>
       </mat-form-field>
-    </div>
 
-    <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Statut</mat-label>
         <mat-select formControlName="status" required>

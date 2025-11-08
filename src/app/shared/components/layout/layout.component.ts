@@ -39,19 +39,15 @@ export class LayoutComponent implements OnInit {
   }
 
   loadRecentMovements(): void {
-    this.stockMovementService.getAll().subscribe({
+    // Pour le badge, on charge seulement les mouvements récents (dernières 24h)
+    // Mais on peut aussi utiliser juste le total du backend
+    const params = { limit: 10, page: 1 }; // On charge juste les 10 derniers pour optimiser
+
+    this.stockMovementService.getAll(params).subscribe({
       next: (response) => {
-        const movements = response.data || [];
-        console.log('📊 Total movements loaded:', movements.length);
-        console.log('📊 Movements data:', movements);
-
-        // For now, show all movements to test if badge works
-        // Later we can filter by date
-        const recentCount = movements.length;
-
-        console.log('📊 Setting badge count to:', recentCount);
+        // Utilise le total du backend au lieu du nombre d'éléments chargés
+        const recentCount = response.total || 0;
         this.recentMovementsCount.set(recentCount);
-        console.log('📊 Badge count after set:', this.recentMovementsCount());
       },
       error: (error) => {
         console.error('❌ Error loading recent movements:', error);

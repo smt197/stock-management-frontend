@@ -9,7 +9,7 @@
     border-radius: vars.$border-radius-lg;
 
     mat-card-header {
-      background: linear-gradient(135deg, vars.$primary-color 0%, vars.$primary-dark 100%);
+      background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
       color: white;
       padding: vars.$spacing-lg;
       margin: calc(-1 * vars.$spacing-md) calc(-1 * vars.$spacing-md) vars.$spacing-lg;

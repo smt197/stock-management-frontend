@@ -1,27 +1,57 @@
 @use '../../../../styles/variables' as vars;
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: vars.$spacing-lg;
-
-  h1 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 500;
-  }
-
-  button {
-    mat-icon {
-      margin-right: vars.$spacing-xs;
-    }
-  }
+.product-list-container {
+  padding: vars.$spacing-lg;
+  animation: fadeIn 0.3s ease-in;
 }
 
 .table-card {
+  box-shadow: vars.$shadow-md;
+  border-radius: vars.$border-radius-lg;
   mat-card-header {
-    margin-bottom: vars.$spacing-md;
+    background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+    color: white;
+    padding: vars.$spacing-lg;
+    margin: calc(-1 * vars.$spacing-md) calc(-1 * vars.$spacing-md) vars.$spacing-lg;
+    border-radius: vars.$border-radius-lg vars.$border-radius-lg 0 0;
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+
+      .header-left {
+        mat-card-title {
+          display: flex;
+          align-items: center;
+          gap: vars.$spacing-sm;
+          font-size: 1.5rem;
+          margin-bottom: vars.$spacing-xs;
+          color: white;
+
+          mat-icon {
+            font-size: 2rem;
+            width: 2rem;
+            height: 2rem;
+            color: white;
+          }
+        }
+
+        mat-card-subtitle {
+          color: rgba(255, 255, 255, 0.8);
+          margin-left: calc(2rem + vars.$spacing-sm);
+        }
+      }
+
+      .header-actions {
+        button {
+          mat-icon {
+            margin-right: vars.$spacing-xs;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -113,14 +143,37 @@ mat-paginator {
   border-top-color: rgba(255, 255, 255, 0.12);
 }
 
-@media (max-width: 768px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: vars.$spacing-md;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    h1 {
-      font-size: 24px;
+@media (max-width: 768px) {
+  .product-list-container {
+    padding: vars.$spacing-sm;
+  }
+
+  .table-card {
+    mat-card-header {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: vars.$spacing-md;
+
+        .header-actions {
+          width: 100%;
+
+          button {
+            width: 100%;
+          }
+        }
+      }
     }
   }
 

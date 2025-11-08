@@ -8,7 +8,7 @@
             Gestion des Catégories
           </mat-card-title>
           <mat-card-subtitle>
-            {{ categories().length }} catégorie(s) au total
+            {{ totalRecords() }} catégorie(s) au total
           </mat-card-subtitle>
         </div>
         <div class="header-actions">
@@ -22,7 +22,7 @@
 
     <mat-card-content>
       <div class="table-container">
-        <table mat-table [dataSource]="categories()" class="categories-table">
+        <table mat-table [dataSource]="dataSource" class="categories-table">
 
           <!-- ID Column -->
           <ng-container matColumnDef="id">
@@ -103,6 +103,13 @@
           </tr>
         </table>
       </div>
+
+      <mat-paginator
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [pageSize]="10"
+        [length]="totalRecords()"
+        showFirstLastButtons>
+      </mat-paginator>
     </mat-card-content>
   </mat-card>
 </div>

@@ -1,6 +1,6 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -8,6 +8,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { CategoryService } from '../../../core/services/category.service';
 import { Category } from '../../../shared/models/category.model';
 import { CategoryForm } from '../category-form/category-form';
@@ -25,15 +26,22 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatDialogModule,
     MatSnackBarModule,
     MatChipsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatPaginatorModule
   ],
   templateUrl: './category-list.html',
   styleUrl: './category-list.scss',
 })
-export class CategoryList implements OnInit {
-  categories = signal<Category[]>([]);
+export class CategoryList implements OnInit, AfterViewInit {
+  dataSource = new MatTableDataSource<Category>([]);
   displayedColumns: string[] = ['id', 'name', 'description', 'parent', 'status', 'actions'];
   loading = signal(false);
+  totalRecords = signal(0);
+
+  pageIndex = 0;
+  pageSize = 10;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private categoryService: CategoryService,
@@ -45,11 +53,31 @@ export class CategoryList implements OnInit {
     this.loadCategories();
   }
 
+  ngAfterViewInit(): void {
+    // Pagination côté serveur - on ne lie pas le paginator au dataSource
+    // Écouter les changements de pagination avec un délai pour s'assurer que le paginator est initialisé
+    setTimeout(() => {
+      if (this.paginator) {
+        this.paginator.page.subscribe(() => {
+          this.pageIndex = this.paginator.pageIndex;
+          this.pageSize = this.paginator.pageSize;
+          this.loadCategories();
+        });
+      }
+    }, 0);
+  }
+
   loadCategories(): void {
     this.loading.set(true);
-    this.categoryService.getAll().subscribe({
+    const params = {
+      page: this.pageIndex + 1,
+      limit: this.pageSize
+    };
+
+    this.categoryService.getAll(params).subscribe({
       next: (response: any) => {
-        this.categories.set(response.data || []);
+        this.dataSource.data = response.data || [];
+        this.totalRecords.set(response.total);
         this.loading.set(false);
       },
       error: (error) => {

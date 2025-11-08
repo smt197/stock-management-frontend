@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,11 +39,15 @@ import { StockMovementFormComponent } from '../stock-movement-form/stock-movemen
   templateUrl: './stock-movement-list.component.html',
   styleUrl: './stock-movement-list.component.scss',
 })
-export class StockMovementListComponent implements OnInit {
+export class StockMovementListComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<any>([]);
   displayedColumns: string[] = ['id', 'date', 'product', 'type', 'quantity', 'reference', 'notes'];
   loading = signal(false);
+  totalRecords = signal(0);
   products: Product[] = [];
+
+  pageIndex = 0;
+  pageSize = 10;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -56,18 +60,36 @@ export class StockMovementListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadMovements();
     this.loadProducts();
+    this.loadMovements();
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    // Pagination côté serveur - on ne lie pas le paginator au dataSource
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
+
+    // Écouter les changements de pagination avec un délai pour s'assurer que le paginator est initialisé
+    setTimeout(() => {
+      if (this.paginator) {
+        this.paginator.page.subscribe(() => {
+          this.pageIndex = this.paginator.pageIndex;
+          this.pageSize = this.paginator.pageSize;
+          this.loadMovements();
+        });
+      }
+    }, 0);
   }
 
   loadMovements(): void {
     this.loading.set(true);
-    this.stockMovementService.getAll().subscribe({
+    const params = {
+      page: this.pageIndex + 1,
+      limit: this.pageSize
+    };
+
+    this.stockMovementService.getAll(params).subscribe({
       next: (response: any) => {
         const movements = response.data || [];
         // Combine movements with product info
@@ -75,6 +97,7 @@ export class StockMovementListComponent implements OnInit {
           ...movement,
           productName: this.getProductName(movement.product_id)
         }));
+        this.totalRecords.set(response.total);
         this.loading.set(false);
       },
       error: (error) => {

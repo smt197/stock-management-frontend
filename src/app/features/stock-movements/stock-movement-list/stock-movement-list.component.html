@@ -116,13 +116,14 @@
             </tr>
           </table>
         </div>
-
-        <mat-paginator
-          [pageSizeOptions]="[10, 25, 50, 100]"
-          [pageSize]="10"
-          showFirstLastButtons>
-        </mat-paginator>
       }
+
+      <mat-paginator
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [pageSize]="10"
+        [length]="totalRecords()"
+        showFirstLastButtons>
+      </mat-paginator>
     </mat-card-content>
   </mat-card>
 </div>

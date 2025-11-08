@@ -4,10 +4,11 @@ h2[mat-dialog-title] {
   gap: 8px;
   margin: 0;
   padding: 16px 24px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  color: white;
 
   mat-icon {
-    color: #1976d2;
+    color: white;
   }
 }
 
@@ -21,7 +22,34 @@ mat-dialog-content {
 .product-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
+
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+    border-left: 4px solid #1976d2;
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 8px 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.87);
+
+      mat-icon {
+        color: #1976d2;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
 
   .form-row {
     display: flex;

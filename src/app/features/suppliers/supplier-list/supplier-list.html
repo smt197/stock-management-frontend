@@ -8,7 +8,7 @@
             Gestion des Fournisseurs
           </mat-card-title>
           <mat-card-subtitle>
-            {{ suppliers().length }} fournisseur(s) au total
+            {{ totalRecords() }} fournisseur(s) au total
           </mat-card-subtitle>
         </div>
         <div class="header-actions">
@@ -28,7 +28,7 @@
         </div>
       } @else {
         <div class="table-container">
-          <table mat-table [dataSource]="suppliers()" class="suppliers-table">
+          <table mat-table [dataSource]="dataSource" class="suppliers-table">
 
             <!-- ID Column -->
             <ng-container matColumnDef="id">
@@ -153,6 +153,13 @@
           </table>
         </div>
       }
+
+      <mat-paginator
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [pageSize]="10"
+        [length]="totalRecords()"
+        showFirstLastButtons>
+      </mat-paginator>
     </mat-card-content>
   </mat-card>
 </div>

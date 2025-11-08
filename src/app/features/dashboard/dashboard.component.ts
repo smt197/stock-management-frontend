@@ -58,23 +58,27 @@ export class DashboardComponent implements OnInit {
   loadDashboardData() {
     this.loading.set(true);
 
+    // Pour le dashboard, on charge TOUTES les données (pas de pagination)
+    // On utilise une limite très élevée pour récupérer tous les éléments
+    const allDataParams = { limit: 10000, page: 1 };
+
     forkJoin({
-      products: this.productService.getAll(),
-      movements: this.stockMovementService.getAll()
+      products: this.productService.getAll(allDataParams),
+      movements: this.stockMovementService.getAll(allDataParams)
     }).subscribe({
       next: ({ products, movements }) => {
         const productsList = products.data;
         const movementsList = movements.data;
 
-        // Calculate stats
+        // Calculate stats using the total from backend (plus précis)
         const totalValue = productsList.reduce((sum, p) => sum + (p.unit_price * p.quantity), 0);
         const lowStock = productsList.filter(p => p.quantity <= p.min_quantity);
 
         this.stats.set({
-          totalProducts: productsList.length,
+          totalProducts: products.total, // Utilise le total du backend
           lowStockProducts: lowStock.length,
           totalValue: totalValue,
-          recentMovements: movementsList.length
+          recentMovements: movements.total // Utilise le total du backend
         });
 
         // Set low stock products

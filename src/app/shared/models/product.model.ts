@@ -1,3 +1,6 @@
+import { Category } from './category.model';
+import { Supplier } from './supplier.model';
+
 export interface Product {
   id: number;
   name: string;
@@ -5,7 +8,9 @@ export interface Product {
   sku: string;
   barcode?: string;
   category_id: number;
+  category?: Category;
   supplier_id?: number;
+  supplier?: Supplier;
   unit_price: number;
   cost_price: number;
   quantity: number;
