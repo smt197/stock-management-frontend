@@ -3,7 +3,7 @@ services:
     name: stock-management-frontend
     env: static
     buildCommand: npm install && npm run build:prod
-    staticPublishPath: dist/stock-management-frontend/browser/browser
+    staticPublishPath: dist/stock-management-frontend/browser
     pullRequestPreviewsEnabled: true
     headers:
       - path: /*

@@ -45,7 +45,7 @@
           },
           "configurations": {
             "production": {
-              "outputPath": "dist/stock-management-frontend/browser",
+              "outputPath": "dist/stock-management-frontend",
               "optimization": true,
               "sourceMap": false,
               "namedChunks": false,
