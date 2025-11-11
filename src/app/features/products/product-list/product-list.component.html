@@ -83,7 +83,7 @@
           <!-- Price Column -->
           <ng-container matColumnDef="unit_price">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix</th>
-            <td mat-cell *matCellDef="let product">{{ product.unit_price | currency:'EUR' }}</td>
+            <td mat-cell *matCellDef="let product">{{ product.unit_price | number:'1.0-0' }} FCFA</td>
           </ng-container>
 
           <!-- Status Column -->
@@ -134,9 +134,11 @@
 
     <mat-paginator
       [pageSizeOptions]="[10, 25, 50, 100]"
-      [pageSize]="10"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
       [length]="totalRecords()"
-      showFirstLastButtons>
+      showFirstLastButtons
+      aria-label="Sélectionner la page des produits">
     </mat-paginator>
   </mat-card-content>
   </mat-card>

@@ -1,8 +1,9 @@
-import { Component, signal, OnInit, computed } from '@angular/core';
+import { Component, signal, OnInit, computed, inject } from '@angular/core';
 import { SharedModule } from '../../shared.module';
 import { RouterModule } from '@angular/router';
 import { StockMovementService } from '../../../core/services/stock-movement.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { User } from '../../models';
 
 @Component({
@@ -14,9 +15,11 @@ import { User } from '../../models';
 })
 export class LayoutComponent implements OnInit {
   sidenavOpened = signal(true);
-  isDarkTheme = signal(false);
   recentMovementsCount = signal(0);
   currentUser = signal<User | null>(null);
+
+  private themeService = inject(ThemeService);
+  isDarkTheme = this.themeService.isDarkTheme;
 
   menuItems = computed(() => [
     { icon: 'dashboard', label: 'Dashboard', route: '/dashboard', badge: null, badgeType: null },
@@ -73,8 +76,7 @@ export class LayoutComponent implements OnInit {
   }
 
   toggleTheme() {
-    this.isDarkTheme.update(value => !value);
-    document.body.classList.toggle('dark-theme');
+    this.themeService.toggleTheme();
   }
 
   logout() {

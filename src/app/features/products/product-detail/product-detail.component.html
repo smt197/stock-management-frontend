@@ -74,7 +74,7 @@
         <mat-card class="info-card">
           <mat-card-header>
             <mat-card-title>
-              <mat-icon>euro</mat-icon>
+              <mat-icon>payments</mat-icon>
               Prix et coûts
             </mat-card-title>
           </mat-card-header>
@@ -82,16 +82,16 @@
             <div class="info-grid">
               <div class="info-item">
                 <span class="label">Prix unitaire</span>
-                <span class="value price">{{ product()?.unit_price | currency:'EUR' }}</span>
+                <span class="value price">{{ product()?.unit_price | number:'1.0-0' }} FCFA</span>
               </div>
               <div class="info-item">
                 <span class="label">Prix de revient</span>
-                <span class="value">{{ product()?.cost_price | currency:'EUR' }}</span>
+                <span class="value">{{ product()?.cost_price | number:'1.0-0' }} FCFA</span>
               </div>
               <div class="info-item">
                 <span class="label">Marge</span>
                 <span class="value profit">
-                  {{ (product()!.unit_price - product()!.cost_price) | currency:'EUR' }}
+                  {{ (product()!.unit_price - product()!.cost_price) | number:'1.0-0' }} FCFA
                   ({{ ((product()!.unit_price - product()!.cost_price) / product()!.cost_price * 100).toFixed(2) }}%)
                 </span>
               </div>

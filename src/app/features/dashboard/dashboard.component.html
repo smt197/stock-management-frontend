@@ -59,11 +59,11 @@
       <mat-card-content>
         <div class="stat-content">
           <div class="stat-icon-wrapper success">
-            <mat-icon class="stat-icon">euro</mat-icon>
+            <mat-icon class="stat-icon">payments</mat-icon>
           </div>
           <div class="stat-details">
             <span class="stat-label">Valeur Totale</span>
-            <h2 class="stat-value">{{ stats().totalValue | currency:'EUR':'symbol':'1.0-0' }}</h2>
+            <h2 class="stat-value">{{ stats().totalValue | number:'1.0-0' }} FCFA</h2>
             <span class="stat-trend positive">
               <mat-icon>trending_up</mat-icon>
               +8% ce mois

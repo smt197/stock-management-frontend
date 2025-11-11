@@ -87,15 +87,15 @@
     <!-- Section: Prix -->
     <div class="form-section">
       <h3 class="section-title">
-        <mat-icon>euro</mat-icon>
-        Prix
+        <mat-icon>payments</mat-icon>
+        Prix (FCFA)
       </h3>
 
       <div class="form-row two-columns">
         <mat-form-field appearance="outline">
-          <mat-label>Prix unitaire</mat-label>
-          <input matInput type="number" formControlName="unit_price" placeholder="0.00" required>
-          <mat-icon matPrefix>euro</mat-icon>
+          <mat-label>Prix unitaire (FCFA)</mat-label>
+          <input matInput type="number" formControlName="unit_price" placeholder="0" required>
+          <mat-icon matPrefix>attach_money</mat-icon>
           <mat-error *ngIf="productForm.get('unit_price')?.hasError('required')">
             Le prix est requis
           </mat-error>
@@ -105,8 +105,8 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Prix de revient</mat-label>
-          <input matInput type="number" formControlName="cost_price" placeholder="0.00" required>
+          <mat-label>Prix de revient (FCFA)</mat-label>
+          <input matInput type="number" formControlName="cost_price" placeholder="0" required>
           <mat-icon matPrefix>payments</mat-icon>
           <mat-error *ngIf="productForm.get('cost_price')?.hasError('required')">
             Le prix de revient est requis

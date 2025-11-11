@@ -1,8 +1,8 @@
-import { Component, OnInit, AfterViewInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, signal, ViewChild } from '@angular/core';
 import { SharedModule } from '../../../shared/shared.module';
 import { RouterModule, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ProductService } from '../../../core/services/product.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -11,6 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductFormComponent } from '../product-form/product-form.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-list',
@@ -19,7 +21,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss'],
 })
-export class ProductListComponent implements OnInit, AfterViewInit {
+export class ProductListComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns: string[] = [
     'image',
     'sku',
@@ -36,6 +38,8 @@ export class ProductListComponent implements OnInit, AfterViewInit {
 
   pageIndex = 0;
   pageSize = 10;
+  searchTerm = '';
+  private searchSubject = new Subject<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -50,6 +54,21 @@ export class ProductListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.loadProducts();
+
+    // Écouter les changements de recherche avec debounce
+    this.searchSubject
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      )
+      .subscribe((searchTerm) => {
+        this.searchTerm = searchTerm;
+        this.pageIndex = 0; // Réinitialiser à la première page lors d'une recherche
+        if (this.paginator) {
+          this.paginator.pageIndex = 0;
+        }
+        this.loadProducts();
+      });
   }
 
   ngAfterViewInit() {
@@ -58,26 +77,30 @@ export class ProductListComponent implements OnInit, AfterViewInit {
       this.dataSource.sort = this.sort;
     }
 
-    // Écouter les changements de pagination avec un délai pour s'assurer que le paginator est initialisé
+    // Écouter les changements de pagination
     setTimeout(() => {
       if (this.paginator) {
-        this.paginator.page.subscribe((event) => {
-          this.pageIndex = this.paginator.pageIndex;
-          this.pageSize = this.paginator.pageSize;
+        this.paginator.page.subscribe((event: PageEvent) => {
+          this.pageIndex = event.pageIndex;
+          this.pageSize = event.pageSize;
           this.loadProducts();
         });
-      } else {
-        console.error('Paginator is not available');
       }
     }, 0);
   }
 
   loadProducts() {
     this.loading.set(true);
-    const params = {
+    const params: any = {
       page: this.pageIndex + 1, // Backend utilise généralement page 1-based
       limit: this.pageSize,
     };
+
+    // Ajouter le terme de recherche s'il existe
+    if (this.searchTerm && this.searchTerm.trim()) {
+      params.search = this.searchTerm.trim();
+    }
+
     this.productService.getAll(params).subscribe({
       next: (response) => {
         this.dataSource.data = response.data;
@@ -94,7 +117,7 @@ export class ProductListComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.searchSubject.next(filterValue);
   }
 
   addProduct() {
@@ -176,5 +199,9 @@ export class ProductListComponent implements OnInit, AfterViewInit {
       return `http://localhost:8000/storage/${product.image}`;
     }
     return product.image_url || null;
+  }
+
+  ngOnDestroy() {
+    this.searchSubject.complete();
   }
 }
