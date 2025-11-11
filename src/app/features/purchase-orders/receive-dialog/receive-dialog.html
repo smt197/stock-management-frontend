@@ -1,0 +1,143 @@
+<h2 mat-dialog-title>
+  <mat-icon>inbox</mat-icon>
+  Réception de commande - {{ purchaseOrder.reference }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="receiveForm" class="receive-form">
+
+    <!-- Info commande -->
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="order-info">
+          <div class="info-item">
+            <strong>Fournisseur:</strong> {{ purchaseOrder.supplier?.name }}
+          </div>
+          <div class="info-item">
+            <strong>Date commande:</strong> {{ purchaseOrder.order_date | date:'dd/MM/yyyy' }}
+          </div>
+          <div class="info-item">
+            <strong>Statut:</strong>
+            <mat-chip-set>
+              <mat-chip [highlighted]="true">
+                {{ purchaseOrderService.getStatusLabel(purchaseOrder.status) }}
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Date de livraison -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date de livraison effective</mat-label>
+      <input matInput [matDatepicker]="deliveryPicker" formControlName="actual_delivery_date" required>
+      <mat-datepicker-toggle matSuffix [for]="deliveryPicker"></mat-datepicker-toggle>
+      <mat-datepicker #deliveryPicker></mat-datepicker>
+      <mat-icon matPrefix>event</mat-icon>
+      <mat-error>La date de livraison est requise</mat-error>
+    </mat-form-field>
+
+    <!-- Actions rapides -->
+    <div class="quick-actions">
+      <button mat-stroked-button type="button" (click)="selectAll()">
+        <mat-icon>check_box</mat-icon>
+        Tout sélectionner
+      </button>
+      <button mat-stroked-button type="button" (click)="unselectAll()">
+        <mat-icon>check_box_outline_blank</mat-icon>
+        Tout désélectionner
+      </button>
+      <button mat-stroked-button color="primary" type="button" (click)="receiveAllRemaining()">
+        <mat-icon>inventory</mat-icon>
+        Recevoir tout le restant
+      </button>
+    </div>
+
+    <!-- Liste des articles -->
+    <div formArrayName="items" class="items-list">
+      <h3>Articles à recevoir</h3>
+
+      @if (items.length === 0) {
+        <mat-card class="empty-state">
+          <mat-card-content>
+            <mat-icon>check_circle</mat-icon>
+            <p>Tous les articles ont déjà été reçus</p>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      @for (item of items.controls; track $index) {
+        <mat-card class="item-card" [formGroupName]="$index">
+          <mat-card-content>
+            <div class="item-row">
+              <mat-checkbox formControlName="receive" class="item-checkbox"></mat-checkbox>
+
+              <div class="item-details">
+                <div class="product-name">
+                  <strong>{{ item.get('product_name')?.value }}</strong>
+                </div>
+
+                <div class="item-quantities">
+                  <div class="quantity-info">
+                    <span class="label">Commandé:</span>
+                    <span class="value">{{ item.get('quantity_ordered')?.value }}</span>
+                  </div>
+                  <div class="quantity-info">
+                    <span class="label">Déjà reçu:</span>
+                    <span class="value">{{ item.get('quantity_received')?.value }}</span>
+                  </div>
+                  <div class="quantity-info remaining">
+                    <span class="label">Restant:</span>
+                    <span class="value">{{ getRemainingQuantity($index) }}</span>
+                  </div>
+                </div>
+
+                <mat-form-field appearance="outline" class="quantity-field">
+                  <mat-label>Quantité à recevoir</mat-label>
+                  <input matInput type="number"
+                         formControlName="quantity_to_receive"
+                         [max]="getRemainingQuantity($index)"
+                         min="1">
+                  <mat-icon matPrefix>inbox</mat-icon>
+                  <mat-hint>Max: {{ getRemainingQuantity($index) }}</mat-hint>
+                  <mat-error *ngIf="item.get('quantity_to_receive')?.hasError('required')">
+                    Quantité requise
+                  </mat-error>
+                  <mat-error *ngIf="item.get('quantity_to_receive')?.hasError('min')">
+                    Minimum: 1
+                  </mat-error>
+                  <mat-error *ngIf="item.get('quantity_to_receive')?.hasError('max')">
+                    Maximum: {{ getRemainingQuantity($index) }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    @if (!hasSelectedItems() && items.length > 0) {
+      <mat-card class="warning-card">
+        <mat-card-content>
+          <mat-icon>warning</mat-icon>
+          <p>Veuillez sélectionner au moins un article à recevoir</p>
+        </mat-card-content>
+      </mat-card>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">
+    Annuler
+  </button>
+  <button mat-raised-button color="primary"
+          (click)="onSubmit()"
+          [disabled]="receiveForm.invalid || loading || !hasSelectedItems()">
+    <mat-icon>check</mat-icon>
+    Valider la réception
+  </button>
+</mat-dialog-actions>

@@ -52,6 +52,19 @@ export const routes: Routes = [
         loadComponent: () => import('./features/stock-movements/stock-movement-list/stock-movement-list.component').then(m => m.StockMovementListComponent)
       },
       {
+        path: 'purchase-orders',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/purchase-orders/purchase-order-list/purchase-order-list').then(m => m.PurchaseOrderListComponent)
+          },
+          {
+            path: ':id',
+            loadComponent: () => import('./features/purchase-orders/purchase-order-detail/purchase-order-detail').then(m => m.PurchaseOrderDetailComponent)
+          }
+        ]
+      },
+      {
         path: 'reports',
         loadComponent: () => import('./features/reports/report.component').then(m => m.ReportComponent)
       }

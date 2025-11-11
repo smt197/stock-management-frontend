@@ -1,0 +1,142 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+  {{ isEditMode ? 'Modifier la commande' : 'Nouvelle commande fournisseur' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="purchaseOrderForm" class="purchase-order-form">
+
+    <!-- Section: Informations générales -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>info</mat-icon>
+        Informations générales
+      </h3>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Fournisseur</mat-label>
+          <mat-select formControlName="supplier_id" required>
+            <mat-option *ngFor="let supplier of suppliers" [value]="supplier.id">
+              {{ supplier.name }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>business</mat-icon>
+          <mat-error *ngIf="purchaseOrderForm.get('supplier_id')?.hasError('required')">
+            Le fournisseur est requis
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date de commande</mat-label>
+          <input matInput [matDatepicker]="orderDatePicker" formControlName="order_date" required>
+          <mat-datepicker-toggle matSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #orderDatePicker></mat-datepicker>
+          <mat-error *ngIf="purchaseOrderForm.get('order_date')?.hasError('required')">
+            La date de commande est requise
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Date de livraison prévue</mat-label>
+          <input matInput [matDatepicker]="deliveryDatePicker" formControlName="expected_delivery_date">
+          <mat-datepicker-toggle matSuffix [for]="deliveryDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #deliveryDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="total-display">
+          <strong>Total:</strong> {{ calculateTotal() | number:'1.0-0' }} FCFA
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notes</mat-label>
+        <textarea matInput formControlName="notes" rows="3" placeholder="Notes ou commentaires..."></textarea>
+        <mat-icon matPrefix>note</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Section: Articles -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <mat-icon>shopping_cart</mat-icon>
+          Articles commandés
+        </h3>
+        <button mat-raised-button color="accent" type="button" (click)="addItem()">
+          <mat-icon>add</mat-icon>
+          Ajouter un article
+        </button>
+      </div>
+
+      <div formArrayName="items" class="items-container">
+        @for (item of items.controls; track $index) {
+          <mat-card class="item-card" [formGroupName]="$index">
+            <mat-card-content>
+              <div class="item-header">
+                <span class="item-number">Article {{ $index + 1 }}</span>
+                <button mat-icon-button color="warn" type="button" (click)="removeItem($index)"
+                        [disabled]="items.length === 1">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+
+              <div class="form-row three-columns">
+                <mat-form-field appearance="outline" class="product-field">
+                  <mat-label>Produit</mat-label>
+                  <mat-select formControlName="product_id" required (selectionChange)="onProductChange($index)">
+                    <mat-option *ngFor="let product of products" [value]="product.id">
+                      {{ product.name }} ({{ product.sku }})
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>inventory_2</mat-icon>
+                  <mat-error>Le produit est requis</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Quantité</mat-label>
+                  <input matInput type="number" formControlName="quantity_ordered" min="1" required>
+                  <mat-icon matPrefix>numbers</mat-icon>
+                  <mat-error>Quantité requise (min: 1)</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Prix unitaire (FCFA)</mat-label>
+                  <input matInput type="number" formControlName="unit_price" min="0" required>
+                  <mat-icon matPrefix>attach_money</mat-icon>
+                  <mat-error>Prix requis (min: 0)</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="item-total">
+                <strong>Total article:</strong> {{ calculateItemTotal($index) | number:'1.0-0' }} FCFA
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+
+      @if (items.length === 0) {
+        <div class="empty-items">
+          <mat-icon>info</mat-icon>
+          <p>Aucun article ajouté. Cliquez sur "Ajouter un article" pour commencer.</p>
+        </div>
+      }
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="loading">
+    Annuler
+  </button>
+  <button mat-raised-button color="primary"
+          (click)="onSubmit()"
+          [disabled]="purchaseOrderForm.invalid || loading || items.length === 0">
+    <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+    {{ isEditMode ? 'Enregistrer' : 'Créer' }}
+  </button>
+</mat-dialog-actions>

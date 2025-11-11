@@ -1,0 +1,243 @@
+<div class="purchase-order-detail-container">
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Chargement de la commande...</p>
+    </div>
+  } @else if (purchaseOrder()) {
+    <div class="detail-header">
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>Commande {{ purchaseOrder()?.reference }}</h1>
+      <div class="header-actions">
+        @if (authService.canUpdate() && canEdit()) {
+          <button mat-raised-button color="primary" (click)="editPurchaseOrder()">
+            <mat-icon>edit</mat-icon>
+            Modifier
+          </button>
+        }
+        @if (authService.canCreate() && canReceive()) {
+          <button mat-raised-button color="accent" (click)="receivePurchaseOrder()">
+            <mat-icon>inbox</mat-icon>
+            Recevoir la livraison
+          </button>
+        }
+        @if (authService.canDelete() && canDelete()) {
+          <button mat-raised-button color="warn" (click)="deletePurchaseOrder()">
+            <mat-icon>delete</mat-icon>
+            Supprimer
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <!-- Colonne principale -->
+      <div class="main-column">
+        <!-- Informations générales -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>info</mat-icon>
+              Informations générales
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Référence</span>
+                <span class="value"><strong>{{ purchaseOrder()?.reference }}</strong></span>
+              </div>
+              <div class="info-item">
+                <span class="label">Fournisseur</span>
+                <span class="value">
+                  <div class="supplier-info">
+                    <mat-icon class="supplier-icon">business</mat-icon>
+                    {{ purchaseOrder()?.supplier?.name || 'N/A' }}
+                  </div>
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="label">Statut</span>
+                <span class="value">
+                  <mat-chip [class]="'status-chip status-' + purchaseOrder()?.status" [highlighted]="true">
+                    {{ getStatusLabel(purchaseOrder()?.status || '') }}
+                  </mat-chip>
+                </span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Dates -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>event</mat-icon>
+              Dates importantes
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Date de commande</span>
+                <span class="value">{{ purchaseOrder()?.order_date | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Livraison prévue</span>
+                <span class="value">
+                  {{ purchaseOrder()?.expected_delivery_date ? (purchaseOrder()?.expected_delivery_date | date:'dd/MM/yyyy') : 'Non définie' }}
+                </span>
+              </div>
+              @if (purchaseOrder()?.actual_delivery_date) {
+                <div class="info-item">
+                  <span class="label">Livraison effective</span>
+                  <span class="value success-text">{{ purchaseOrder()?.actual_delivery_date | date:'dd/MM/yyyy' }}</span>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Articles commandés -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>inventory_2</mat-icon>
+              Articles commandés
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="items-table-container">
+              <table mat-table [dataSource]="purchaseOrder()?.items || []" class="items-table">
+                <!-- Product Column -->
+                <ng-container matColumnDef="product">
+                  <th mat-header-cell *matHeaderCellDef>Produit</th>
+                  <td mat-cell *matCellDef="let item">
+                    <strong>{{ item.product?.name || 'N/A' }}</strong>
+                  </td>
+                </ng-container>
+
+                <!-- Quantity Ordered Column -->
+                <ng-container matColumnDef="quantity_ordered">
+                  <th mat-header-cell *matHeaderCellDef>Qté commandée</th>
+                  <td mat-cell *matCellDef="let item">
+                    {{ item.quantity_ordered }}
+                  </td>
+                </ng-container>
+
+                <!-- Quantity Received Column -->
+                <ng-container matColumnDef="quantity_received">
+                  <th mat-header-cell *matHeaderCellDef>Qté reçue</th>
+                  <td mat-cell *matCellDef="let item">
+                    <span [class.success-text]="item.quantity_received === item.quantity_ordered"
+                          [class.warning-text]="item.quantity_received > 0 && item.quantity_received < item.quantity_ordered"
+                          [class.danger-text]="item.quantity_received === 0">
+                      {{ item.quantity_received }}
+                    </span>
+                  </td>
+                </ng-container>
+
+                <!-- Progress Column -->
+                <ng-container matColumnDef="progress">
+                  <th mat-header-cell *matHeaderCellDef>Progression</th>
+                  <td mat-cell *matCellDef="let item">
+                    <div class="progress-container">
+                      <mat-progress-bar
+                        mode="determinate"
+                        [value]="getProgressPercentage(item.quantity_received, item.quantity_ordered)"
+                        [class.complete]="item.quantity_received === item.quantity_ordered">
+                      </mat-progress-bar>
+                      <span class="progress-label">
+                        {{ getProgressPercentage(item.quantity_received, item.quantity_ordered) | number:'1.0-0' }}%
+                      </span>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Unit Price Column -->
+                <ng-container matColumnDef="unit_price">
+                  <th mat-header-cell *matHeaderCellDef>Prix unitaire</th>
+                  <td mat-cell *matCellDef="let item">
+                    {{ item.unit_price | number:'1.0-0' }} FCFA
+                  </td>
+                </ng-container>
+
+                <!-- Total Column -->
+                <ng-container matColumnDef="total">
+                  <th mat-header-cell *matHeaderCellDef>Total</th>
+                  <td mat-cell *matCellDef="let item">
+                    <strong>{{ calculateItemTotal(item.quantity_ordered, item.unit_price) | number:'1.0-0' }} FCFA</strong>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['product', 'quantity_ordered', 'quantity_received', 'progress', 'unit_price', 'total']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['product', 'quantity_ordered', 'quantity_received', 'progress', 'unit_price', 'total'];"></tr>
+              </table>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Notes -->
+        @if (purchaseOrder()?.notes) {
+          <mat-card class="info-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>notes</mat-icon>
+                Notes
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="notes-text">{{ purchaseOrder()?.notes }}</p>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+
+      <!-- Colonne latérale -->
+      <div class="side-column">
+        <!-- Montant total -->
+        <mat-card class="info-card summary-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>payments</mat-icon>
+              Montant total
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="total-amount">
+              <span class="amount">{{ purchaseOrder()?.total_amount | number:'1.0-0' }} FCFA</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Informations système -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>schedule</mat-icon>
+              Informations système
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Créé par</span>
+                <span class="value">{{ purchaseOrder()?.user?.name || 'N/A' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Date de création</span>
+                <span class="value">{{ purchaseOrder()?.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Dernière modification</span>
+                <span class="value">{{ purchaseOrder()?.updated_at | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

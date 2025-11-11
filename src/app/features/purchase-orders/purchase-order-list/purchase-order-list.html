@@ -1,0 +1,150 @@
+<div class="purchase-order-list-container">
+  <mat-card class="table-card">
+    <mat-card-header>
+      <div class="header-content">
+        <div class="header-left">
+          <mat-card-title>
+            <mat-icon>shopping_cart</mat-icon>
+            Commandes Fournisseurs
+          </mat-card-title>
+          <mat-card-subtitle>
+            {{ totalRecords() }} commande(s) au total
+          </mat-card-subtitle>
+        </div>
+        <div class="header-actions">
+          @if (authService.canCreate()) {
+            <button mat-raised-button color="primary" (click)="addPurchaseOrder()">
+              <mat-icon>add</mat-icon>
+              Nouvelle Commande
+            </button>
+          }
+        </div>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="table-toolbar">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Rechercher par référence...">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      @if (loading()) {
+        <div class="loading-container">
+          <mat-spinner></mat-spinner>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table mat-table [dataSource]="dataSource" matSort class="data-table">
+
+            <!-- Reference Column -->
+            <ng-container matColumnDef="reference">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Référence</th>
+              <td mat-cell *matCellDef="let order">
+                <strong>{{ order.reference }}</strong>
+              </td>
+            </ng-container>
+
+            <!-- Supplier Column -->
+            <ng-container matColumnDef="supplier">
+              <th mat-header-cell *matHeaderCellDef>Fournisseur</th>
+              <td mat-cell *matCellDef="let order">
+                <div class="supplier-info">
+                  <mat-icon class="supplier-icon">business</mat-icon>
+                  <span>{{ order.supplier?.name || 'N/A' }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Order Date Column -->
+            <ng-container matColumnDef="order_date">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Date commande</th>
+              <td mat-cell *matCellDef="let order">
+                {{ order.order_date | date:'dd/MM/yyyy' }}
+              </td>
+            </ng-container>
+
+            <!-- Expected Delivery Date Column -->
+            <ng-container matColumnDef="expected_delivery_date">
+              <th mat-header-cell *matHeaderCellDef>Livraison prévue</th>
+              <td mat-cell *matCellDef="let order">
+                <span class="delivery-date">
+                  {{ order.expected_delivery_date ? (order.expected_delivery_date | date:'dd/MM/yyyy') : 'Non définie' }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <td mat-cell *matCellDef="let order">
+                <mat-chip-set>
+                  <mat-chip [class]="'status-chip status-' + order.status" [highlighted]="true">
+                    {{ getStatusLabel(order.status) }}
+                  </mat-chip>
+                </mat-chip-set>
+              </td>
+            </ng-container>
+
+            <!-- Total Amount Column -->
+            <ng-container matColumnDef="total_amount">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Montant total</th>
+              <td mat-cell *matCellDef="let order">
+                <span class="amount">{{ order.total_amount | number:'1.0-0' }} FCFA</span>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let order">
+                <button mat-icon-button [matMenuTriggerFor]="menu" color="primary">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="viewPurchaseOrder(order)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Voir les détails</span>
+                  </button>
+                  @if (authService.canUpdate() && canEdit(order)) {
+                    <button mat-menu-item (click)="editPurchaseOrder(order)">
+                      <mat-icon>edit</mat-icon>
+                      <span>Modifier</span>
+                    </button>
+                  }
+                  @if (authService.canCreate() && canReceive(order)) {
+                    <button mat-menu-item (click)="receivePurchaseOrder(order)" class="receive-action">
+                      <mat-icon color="primary">inbox</mat-icon>
+                      <span>Recevoir la livraison</span>
+                    </button>
+                  }
+                  @if (authService.canDelete() && canDelete(order)) {
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="deletePurchaseOrder(order)" class="delete-action">
+                      <mat-icon color="warn">delete</mat-icon>
+                      <span>Supprimer</span>
+                    </button>
+                  }
+                </mat-menu>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+          </table>
+        </div>
+      }
+
+      <mat-paginator
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [length]="totalRecords()"
+        showFirstLastButtons
+        aria-label="Sélectionner la page des commandes">
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>
