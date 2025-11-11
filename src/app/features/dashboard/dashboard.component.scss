@@ -1,6 +1,5 @@
 @use '../../../styles/variables' as vars;
 
-// Dashboard Header
 .dashboard-header {
   margin-bottom: vars.$spacing-xl;
   animation: slideDown 0.5s ease;
@@ -39,7 +38,6 @@
   }
 }
 
-// Loading
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -54,7 +52,6 @@
   }
 }
 
-// Stats Grid
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -120,22 +117,22 @@
       flex-shrink: 0;
 
       &.primary {
-        background: linear-gradient(135deg, rgba(vars.$primary-color, 0.1) 0%, rgba(vars.$primary-color, 0.2) 100%);
+        background: linear-gradient(135deg, rgba(vars.$primary-color, 0.1), rgba(vars.$primary-color, 0.2));
         color: vars.$primary-color;
       }
 
       &.warn {
-        background: linear-gradient(135deg, rgba(vars.$warn-color, 0.1) 0%, rgba(vars.$warn-color, 0.2) 100%);
+        background: linear-gradient(135deg, rgba(vars.$warn-color, 0.1), rgba(vars.$warn-color, 0.2));
         color: vars.$warn-color;
       }
 
       &.success {
-        background: linear-gradient(135deg, rgba(vars.$success-color, 0.1) 0%, rgba(vars.$success-color, 0.2) 100%);
+        background: linear-gradient(135deg, rgba(vars.$success-color, 0.1), rgba(vars.$success-color, 0.2));
         color: vars.$success-color;
       }
 
       &.info {
-        background: linear-gradient(135deg, rgba(vars.$info-color, 0.1) 0%, rgba(vars.$info-color, 0.2) 100%);
+        background: linear-gradient(135deg, rgba(vars.$info-color, 0.1), rgba(vars.$info-color, 0.2));
         color: vars.$info-color;
       }
 
@@ -161,11 +158,10 @@
       }
 
       .stat-value {
-        margin: 0;
+        margin: 0 0 vars.$spacing-xs;
         font-size: 28px;
         font-weight: 700;
         line-height: 1;
-        margin-bottom: vars.$spacing-xs;
       }
 
       .stat-trend {
@@ -202,7 +198,6 @@
   }
 }
 
-// Quick Actions
 .quick-actions-section {
   margin-bottom: vars.$spacing-xl;
 
@@ -264,7 +259,6 @@
   }
 }
 
-// Dashboard Grid
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -313,7 +307,6 @@
         color: white;
         font-size: 12px;
         font-weight: 700;
-        line-height: 1;
       }
     }
 
@@ -327,7 +320,6 @@
     }
   }
 
-  // Activity Card
   .activity-card {
     .activity-list {
       display: flex;
@@ -341,7 +333,6 @@
       padding: vars.$spacing-md;
       border-radius: vars.$border-radius-md;
       transition: all 0.3s ease;
-      position: relative;
 
       &:hover {
         background-color: rgba(vars.$primary-color, 0.04);
@@ -370,22 +361,22 @@
         }
 
         &.success {
-          background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+          background: linear-gradient(135deg, #4caf50, #66bb6a);
           color: white;
         }
 
         &.warn {
-          background: linear-gradient(135deg, #f44336 0%, #ef5350 100%);
+          background: linear-gradient(135deg, #f44336, #ef5350);
           color: white;
         }
 
         &.primary {
-          background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+          background: linear-gradient(135deg, #2196f3, #42a5f5);
           color: white;
         }
 
         &.info {
-          background: linear-gradient(135deg, #ff9800 0%, #ffa726 100%);
+          background: linear-gradient(135deg, #ff9800, #ffa726);
           color: white;
         }
       }
@@ -451,25 +442,8 @@
         }
       }
     }
-
-    .activity-divider {
-      margin: vars.$spacing-xs 0;
-      opacity: 0.5;
-    }
-
-    mat-card-actions {
-      padding: vars.$spacing-md vars.$spacing-lg;
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
-
-      button {
-        mat-icon {
-          margin-left: vars.$spacing-xs;
-        }
-      }
-    }
   }
 
-  // Chart Card
   .chart-card {
     .chart-container {
       height: 300px;
@@ -505,13 +479,12 @@
 
       .placeholder-subtext {
         font-size: 13px;
-        margin: vars.$spacing-xs 0 0 0;
+        margin: vars.$spacing-xs 0 0;
         opacity: 0.7;
       }
     }
   }
 
-  // Alerts Card
   .alerts-card {
     .alert-list {
       .alert-item {
@@ -554,89 +527,6 @@
   }
 }
 
-// Dark Theme
-.dark-theme {
-  .dashboard-header {
-    .header-content {
-      .header-subtitle {
-        color: vars.$dark-text-secondary;
-      }
-    }
-  }
-
-  .stats-grid .stat-card .stat-details {
-    .stat-label {
-      color: vars.$dark-text-secondary;
-    }
-  }
-
-  .quick-actions-section .section-title {
-    color: vars.$dark-text-primary;
-  }
-
-  .dashboard-grid .modern-card {
-    mat-card-header {
-      border-bottom-color: rgba(255, 255, 255, 0.08);
-    }
-
-    mat-card-actions {
-      border-top-color: rgba(255, 255, 255, 0.08);
-    }
-  }
-}
-
-// Animations
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Responsive
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-header {
-    .header-content {
-      flex-direction: column;
-      align-items: flex-start;
-
-      h1 {
-        font-size: 24px;
-      }
-    }
-  }
-
-  .quick-actions-section {
-    .quick-actions-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-}
-
-// Empty State
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -645,7 +535,7 @@
   padding: vars.$spacing-xxl;
   text-align: center;
   color: vars.$text-secondary;
-  background: linear-gradient(135deg, rgba(vars.$primary-color, 0.02) 0%, rgba(vars.$primary-color, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(vars.$primary-color, 0.02), rgba(vars.$primary-color, 0.05));
   border-radius: vars.$border-radius-md;
   margin: vars.$spacing-md 0;
 
@@ -672,7 +562,6 @@
   }
 }
 
-// Charts Section
 .charts-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -680,8 +569,7 @@
   margin-top: vars.$spacing-xl;
 
   .chart-card-large {
-    animation: fadeInUp 0.6s ease backwards;
-    animation-delay: 0.4s;
+    animation: fadeInUp 0.6s ease backwards 0.4s;
 
     .chart-container-large {
       height: 350px;
@@ -696,5 +584,50 @@
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-header .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+
+    h1 {
+      font-size: 24px;
+    }
+  }
+
+  .quick-actions-section .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
