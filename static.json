@@ -1,0 +1,12 @@
+{
+  "root": "dist/stock-management-frontend/browser/",
+  "routes": {
+    "/**": "/index.html"
+  },
+  "clean_urls": true,
+  "headers": {
+    "/**": {
+      "Cache-Control": "no-cache, no-store, must-revalidate"
+    }
+  }
+}
