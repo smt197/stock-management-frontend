@@ -78,39 +78,41 @@
                   <strong>{{ item.get('product_name')?.value }}</strong>
                 </div>
 
-                <div class="item-quantities">
-                  <div class="quantity-info">
-                    <span class="label">Commandé:</span>
-                    <span class="value">{{ item.get('quantity_ordered')?.value }}</span>
+                <div class="item-content">
+                  <div class="item-quantities">
+                    <div class="quantity-info">
+                      <span class="label">Commandé:</span>
+                      <span class="value">{{ item.get('quantity_ordered')?.value }}</span>
+                    </div>
+                    <div class="quantity-info">
+                      <span class="label">Déjà reçu:</span>
+                      <span class="value">{{ item.get('quantity_received')?.value }}</span>
+                    </div>
+                    <div class="quantity-info remaining">
+                      <span class="label">Restant:</span>
+                      <span class="value">{{ getRemainingQuantity($index) }}</span>
+                    </div>
                   </div>
-                  <div class="quantity-info">
-                    <span class="label">Déjà reçu:</span>
-                    <span class="value">{{ item.get('quantity_received')?.value }}</span>
-                  </div>
-                  <div class="quantity-info remaining">
-                    <span class="label">Restant:</span>
-                    <span class="value">{{ getRemainingQuantity($index) }}</span>
-                  </div>
-                </div>
 
-                <mat-form-field appearance="outline" class="quantity-field">
-                  <mat-label>Quantité à recevoir</mat-label>
-                  <input matInput type="number"
-                         formControlName="quantity_to_receive"
-                         [max]="getRemainingQuantity($index)"
-                         min="1">
-                  <mat-icon matPrefix>inbox</mat-icon>
-                  <mat-hint>Max: {{ getRemainingQuantity($index) }}</mat-hint>
-                  <mat-error *ngIf="item.get('quantity_to_receive')?.hasError('required')">
-                    Quantité requise
-                  </mat-error>
-                  <mat-error *ngIf="item.get('quantity_to_receive')?.hasError('min')">
-                    Minimum: 1
-                  </mat-error>
-                  <mat-error *ngIf="item.get('quantity_to_receive')?.hasError('max')">
-                    Maximum: {{ getRemainingQuantity($index) }}
-                  </mat-error>
-                </mat-form-field>
+                  <mat-form-field appearance="outline" class="quantity-field">
+                    <mat-label>Quantité à recevoir</mat-label>
+                    <input matInput type="number"
+                           formControlName="quantity_to_receive"
+                           [max]="getRemainingQuantity($index)"
+                           min="1">
+                    <mat-icon matPrefix>inbox</mat-icon>
+                    <mat-hint>Max: {{ getRemainingQuantity($index) }}</mat-hint>
+                    <mat-error *ngIf="item.get('quantity_to_receive')?.hasError('required')">
+                      Quantité requise
+                    </mat-error>
+                    <mat-error *ngIf="item.get('quantity_to_receive')?.hasError('min')">
+                      Minimum: 1
+                    </mat-error>
+                    <mat-error *ngIf="item.get('quantity_to_receive')?.hasError('max')">
+                      Maximum: {{ getRemainingQuantity($index) }}
+                    </mat-error>
+                  </mat-form-field>
+                </div>
               </div>
             </div>
           </mat-card-content>

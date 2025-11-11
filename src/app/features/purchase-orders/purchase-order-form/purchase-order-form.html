@@ -83,20 +83,20 @@
                 </button>
               </div>
 
-              <div class="form-row three-columns">
-                <mat-form-field appearance="outline" class="product-field">
-                  <mat-label>Produit</mat-label>
-                  <mat-select formControlName="product_id" required (selectionChange)="onProductChange($index)">
-                    <mat-option *ngFor="let product of products" [value]="product.id">
-                      {{ product.name }} ({{ product.sku }})
-                    </mat-option>
-                  </mat-select>
-                  <mat-icon matPrefix>inventory_2</mat-icon>
-                  <mat-error>Le produit est requis</mat-error>
-                </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Produit</mat-label>
+                <mat-select formControlName="product_id" required (selectionChange)="onProductChange($index)">
+                  <mat-option *ngFor="let product of products" [value]="product.id">
+                    {{ product.name }} ({{ product.sku }})
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>inventory_2</mat-icon>
+                <mat-error>Le produit est requis</mat-error>
+              </mat-form-field>
 
+              <div class="form-row two-columns">
                 <mat-form-field appearance="outline">
-                  <mat-label>Quantité</mat-label>
+                  <mat-label>Quantité commandée</mat-label>
                   <input matInput type="number" formControlName="quantity_ordered" min="1" required>
                   <mat-icon matPrefix>numbers</mat-icon>
                   <mat-error>Quantité requise (min: 1)</mat-error>

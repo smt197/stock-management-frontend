@@ -64,7 +64,7 @@ export class PurchaseOrderDetailComponent implements OnInit {
 
   editPurchaseOrder() {
     const dialogRef = this.dialog.open(PurchaseOrderFormComponent, {
-      width: '900px',
+      width: '1200px',
       maxHeight: '90vh',
       data: { mode: 'edit', purchaseOrder: this.purchaseOrder() }
     });
@@ -78,7 +78,7 @@ export class PurchaseOrderDetailComponent implements OnInit {
 
   receivePurchaseOrder() {
     const dialogRef = this.dialog.open(ReceiveDialogComponent, {
-      width: '800px',
+      width: '1000px',
       maxHeight: '90vh',
       data: { purchaseOrder: this.purchaseOrder() }
     });

@@ -477,7 +477,7 @@ export class DashboardComponent implements OnInit {
 
   openNewProductDialog(): void {
     const dialogRef = this.dialog.open(ProductFormComponent, {
-      width: '800px',
+      width: '1200px',
       maxHeight: '90vh',
       data: { mode: 'create' },
     });

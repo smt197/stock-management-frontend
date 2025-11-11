@@ -24,14 +24,6 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Description</mat-label>
-        <textarea matInput formControlName="description"
-                  placeholder="Description du produit"
-                  rows="3"></textarea>
-        <mat-icon matPrefix>description</mat-icon>
-      </mat-form-field>
-
       <div class="form-row two-columns">
         <mat-form-field appearance="outline">
           <mat-label>SKU</mat-label>
@@ -48,14 +40,6 @@
           <mat-icon matPrefix>barcode</mat-icon>
         </mat-form-field>
       </div>
-    </div>
-
-    <!-- Section: Classification -->
-    <div class="form-section">
-      <h3 class="section-title">
-        <mat-icon>category</mat-icon>
-        Classification
-      </h3>
 
       <div class="form-row two-columns">
         <mat-form-field appearance="outline">
@@ -82,13 +66,21 @@
           <mat-icon matPrefix>business</mat-icon>
         </mat-form-field>
       </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description"
+                  placeholder="Description du produit"
+                  rows="2"></textarea>
+        <mat-icon matPrefix>description</mat-icon>
+      </mat-form-field>
     </div>
 
-    <!-- Section: Prix -->
+    <!-- Section: Prix et Stock -->
     <div class="form-section">
       <h3 class="section-title">
         <mat-icon>payments</mat-icon>
-        Prix (FCFA)
+        Prix et Stock
       </h3>
 
       <div class="form-row two-columns">
@@ -116,18 +108,10 @@
           </mat-error>
         </mat-form-field>
       </div>
-    </div>
 
-    <!-- Section: Stock -->
-    <div class="form-section">
-      <h3 class="section-title">
-        <mat-icon>inventory</mat-icon>
-        Gestion du stock
-      </h3>
-
-      <div class="form-row three-columns">
+      <div class="form-row two-columns">
         <mat-form-field appearance="outline">
-          <mat-label>Quantité</mat-label>
+          <mat-label>Quantité en stock</mat-label>
           <input matInput type="number" formControlName="quantity" placeholder="0" required>
           <mat-icon matPrefix>inventory</mat-icon>
           <mat-error *ngIf="productForm.get('quantity')?.hasError('required')">
@@ -143,67 +127,70 @@
             Le stock minimum est requis
           </mat-error>
         </mat-form-field>
+      </div>
 
+      <div class="form-row two-columns">
         <mat-form-field appearance="outline">
           <mat-label>Stock maximum</mat-label>
           <input matInput type="number" formControlName="max_quantity" placeholder="0">
           <mat-icon matPrefix>trending_up</mat-icon>
         </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="status" required>
+            <mat-option value="active">Actif</mat-option>
+            <mat-option value="inactive">Inactif</mat-option>
+            <mat-option value="discontinued">Arrêté</mat-option>
+          </mat-select>
+          <mat-icon matPrefix>toggle_on</mat-icon>
+          <mat-error *ngIf="productForm.get('status')?.hasError('required')">
+            Le statut est requis
+          </mat-error>
+        </mat-form-field>
       </div>
     </div>
 
-    <!-- Section: Autres -->
+    <!-- Section: Image -->
     <div class="form-section">
       <h3 class="section-title">
-        <mat-icon>more_horiz</mat-icon>
-        Autres informations
+        <mat-icon>image</mat-icon>
+        Image du produit
       </h3>
 
-      <!-- Image Upload -->
-      <div class="image-upload-section">
-        <h4>Image du produit</h4>
-        <div class="image-upload-container">
-          @if (imagePreview) {
-            <div class="image-preview">
-              <img [src]="imagePreview" alt="Aperçu de l'image">
-              <button mat-icon-button color="warn" class="remove-image-btn" (click)="removeImage()" type="button">
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-          } @else {
-            <div class="upload-placeholder">
-              <mat-icon>add_photo_alternate</mat-icon>
-              <p>Aucune image</p>
-            </div>
-          }
-          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
-          <button mat-raised-button color="accent" (click)="fileInput.click()" type="button">
-            <mat-icon>upload</mat-icon>
-            {{ imagePreview ? 'Changer l\'image' : 'Télécharger une image' }}
-          </button>
-          <small class="hint-text">Formats acceptés: JPG, PNG, GIF (Max 2MB)</small>
+      <div class="form-row two-columns align-start">
+        <!-- Image Upload -->
+        <div class="image-upload-wrapper">
+          <div class="image-upload-container">
+            @if (imagePreview) {
+              <div class="image-preview">
+                <img [src]="imagePreview" alt="Aperçu de l'image">
+                <button mat-icon-button color="warn" class="remove-image-btn" (click)="removeImage()" type="button">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            } @else {
+              <div class="upload-placeholder">
+                <mat-icon>add_photo_alternate</mat-icon>
+                <p>Aucune image</p>
+              </div>
+            }
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
+            <button mat-raised-button color="accent" (click)="fileInput.click()" type="button" class="upload-btn">
+              <mat-icon>upload</mat-icon>
+              {{ imagePreview ? 'Changer' : 'Télécharger' }}
+            </button>
+            <small class="hint-text">Formats: JPG, PNG, GIF (Max 2MB)</small>
+          </div>
         </div>
+
+        <mat-form-field appearance="outline" class="flex-field">
+          <mat-label>URL de l'image (alternative)</mat-label>
+          <input matInput formControlName="image_url" placeholder="https://example.com/image.jpg">
+          <mat-icon matPrefix>link</mat-icon>
+          <mat-hint>Vous pouvez fournir une URL au lieu de télécharger</mat-hint>
+        </mat-form-field>
       </div>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>URL de l'image</mat-label>
-        <input matInput formControlName="image_url" placeholder="https://example.com/image.jpg">
-        <mat-icon matPrefix>link</mat-icon>
-        <mat-hint>Alternative: Vous pouvez fournir une URL au lieu de télécharger</mat-hint>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Statut</mat-label>
-        <mat-select formControlName="status" required>
-          <mat-option value="active">Actif</mat-option>
-          <mat-option value="inactive">Inactif</mat-option>
-          <mat-option value="discontinued">Arrêté</mat-option>
-        </mat-select>
-        <mat-icon matPrefix>toggle_on</mat-icon>
-        <mat-error *ngIf="productForm.get('status')?.hasError('required')">
-          Le statut est requis
-        </mat-error>
-      </mat-form-field>
     </div>
   </form>
 </mat-dialog-content>

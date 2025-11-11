@@ -122,7 +122,7 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
 
   addPurchaseOrder() {
     const dialogRef = this.dialog.open(PurchaseOrderFormComponent, {
-      width: '900px',
+      width: '1200px',
       maxHeight: '90vh',
       data: { mode: 'create' }
     });
@@ -136,7 +136,7 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
 
   editPurchaseOrder(purchaseOrder: PurchaseOrder) {
     const dialogRef = this.dialog.open(PurchaseOrderFormComponent, {
-      width: '900px',
+      width: '1200px',
       maxHeight: '90vh',
       data: { mode: 'edit', purchaseOrder }
     });
@@ -154,7 +154,7 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
 
   receivePurchaseOrder(purchaseOrder: PurchaseOrder) {
     const dialogRef = this.dialog.open(ReceiveDialogComponent, {
-      width: '800px',
+      width: '1000px',
       maxHeight: '90vh',
       data: { purchaseOrder }
     });

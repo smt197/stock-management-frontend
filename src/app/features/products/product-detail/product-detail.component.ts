@@ -60,7 +60,7 @@ export class ProductDetailComponent implements OnInit {
     if (!product) return;
 
     const dialogRef = this.dialog.open(ProductFormComponent, {
-      width: '800px',
+      width: '1200px',
       maxHeight: '90vh',
       data: { mode: 'edit', product }
     });

@@ -122,7 +122,7 @@ export class ProductListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   addProduct() {
     const dialogRef = this.dialog.open(ProductFormComponent, {
-      width: '800px',
+      width: '1200px',
       maxHeight: '90vh',
       data: { mode: 'create' },
     });
@@ -136,7 +136,7 @@ export class ProductListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   editProduct(product: Product) {
     const dialogRef = this.dialog.open(ProductFormComponent, {
-      width: '800px',
+      width: '1200px',
       maxHeight: '90vh',
       data: { mode: 'edit', product },
     });

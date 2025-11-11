@@ -1,0 +1,209 @@
+@use '../../../../styles/variables' as vars;
+
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: vars.$spacing-xs;
+  margin: 0;
+  padding: vars.$spacing-md vars.$spacing-lg;
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  color: white;
+
+  mat-icon {
+    color: white;
+  }
+}
+
+mat-dialog-content {
+  padding: vars.$spacing-lg !important;
+  min-height: 400px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.purchase-order-form {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$spacing-lg;
+
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing-md;
+    padding: vars.$spacing-md;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: vars.$border-radius-md;
+    border-left: 4px solid #1976d2;
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: vars.$spacing-xs;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: vars.$spacing-xs;
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.87);
+
+      mat-icon {
+        color: #1976d2;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .form-row {
+    display: flex;
+    gap: vars.$spacing-md;
+    width: 100%;
+    align-items: center;
+
+    &.two-columns {
+      mat-form-field {
+        flex: 1;
+      }
+    }
+
+    &.three-columns {
+      mat-form-field {
+        flex: 1;
+      }
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .total-display {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: vars.$spacing-md;
+    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    border-radius: vars.$border-radius-md;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    box-shadow: vars.$shadow-sm;
+
+    strong {
+      margin-right: vars.$spacing-xs;
+    }
+  }
+
+  mat-form-field {
+    mat-icon[matPrefix] {
+      margin-right: vars.$spacing-xs;
+      color: rgba(0, 0, 0, 0.54);
+    }
+  }
+
+  .items-container {
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing-md;
+  }
+
+  .item-card {
+    box-shadow: vars.$shadow-sm;
+    border-left: 3px solid #1976d2;
+
+    mat-card-content {
+      padding: vars.$spacing-md !important;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: vars.$spacing-md;
+      padding-bottom: vars.$spacing-xs;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+      .item-number {
+        font-weight: 600;
+        color: #1976d2;
+        font-size: 0.95rem;
+      }
+    }
+
+    .item-total {
+      margin-top: vars.$spacing-md;
+      padding-top: vars.$spacing-md;
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
+      text-align: right;
+      color: #2e7d32;
+      font-size: 1rem;
+
+      strong {
+        margin-right: vars.$spacing-xs;
+      }
+    }
+
+    .product-field {
+      flex: 2 !important;
+    }
+  }
+
+  .empty-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: vars.$spacing-xl;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: vars.$border-radius-md;
+    color: rgba(0, 0, 0, 0.54);
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: vars.$spacing-sm;
+    }
+
+    p {
+      margin: 0;
+      text-align: center;
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: vars.$spacing-md vars.$spacing-lg;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  margin: 0;
+
+  button {
+    margin-left: vars.$spacing-xs;
+
+    mat-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .purchase-order-form {
+    .form-row {
+      &.two-columns,
+      &.three-columns {
+        flex-direction: column;
+      }
+    }
+
+    .total-display {
+      font-size: 1rem;
+    }
+  }
+}
