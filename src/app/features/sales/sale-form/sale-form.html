@@ -200,7 +200,7 @@
 
             <div class="summary-row">
               <span>Quantité Totale:</span>
-              <strong>{{ cartItems.reduce((sum, item) => sum + item.quantity, 0) }}</strong>
+              <strong>{{ getTotalQuantity() }}</strong>
             </div>
 
             <mat-divider></mat-divider>

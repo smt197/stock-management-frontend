@@ -174,7 +174,7 @@
               </div>
               <div class="summary-row">
                 <span>Quantité Totale:</span>
-                <strong>{{ sale.items?.reduce((sum, item) => sum + item.quantity, 0) || 0 }}</strong>
+                <strong>{{ getTotalQuantity(sale.items || []) }}</strong>
               </div>
               <mat-divider></mat-divider>
               <div class="summary-row total-row">

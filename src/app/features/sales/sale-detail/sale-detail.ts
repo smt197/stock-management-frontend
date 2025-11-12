@@ -151,4 +151,9 @@ export class SaleDetailComponent implements OnInit {
     if (item.unit_price === 0) return 0;
     return ((item.unit_price - item.cost_price) / item.unit_price) * 100;
   }
+
+  getTotalQuantity(items: any[]): number {
+    if (!items) return 0;
+    return items.reduce((sum, item) => sum + item.quantity, 0);
+  }
 }

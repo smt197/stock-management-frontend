@@ -10,9 +10,11 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map, startWith, debounceTime, switchMap } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 import { SaleService } from '../../../core/services/sale.service';
 import { ProductService } from '../../../core/services/product.service';
@@ -43,13 +45,14 @@ interface CartItem {
     MatTableModule,
     MatCardModule,
     MatSnackBarModule,
+    MatDividerModule,
   ],
   templateUrl: './sale-form.html',
   styleUrls: ['./sale-form.scss']
 })
 export class SaleFormComponent implements OnInit {
   saleForm: FormGroup;
-  productSearchControl = this.fb.control('');
+  productSearchControl = new FormControl('');
 
   cartItems: CartItem[] = [];
   displayedColumns: string[] = ['product_name', 'unit_price', 'quantity', 'subtotal', 'actions'];
@@ -88,12 +91,12 @@ export class SaleFormComponent implements OnInit {
 
   loadProducts(): void {
     this.loading = true;
-    this.productService.getProducts({ limit: 1000, status: 'active' }).subscribe({
-      next: (response) => {
-        this.availableProducts = response.data.filter((p: any) => p.quantity > 0);
+    this.productService.getAll({ limit: 1000, page: 1 }).subscribe({
+      next: (response: any) => {
+        this.availableProducts = response.data.filter((p: any) => p.quantity > 0 && p.status === 'active');
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Erreur lors du chargement des produits:', error);
         this.snackBar.open('Erreur lors du chargement des produits', 'Fermer', { duration: 3000 });
         this.loading = false;
@@ -189,6 +192,10 @@ export class SaleFormComponent implements OnInit {
 
   getTotalAmount(): number {
     return this.cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+  }
+
+  getTotalQuantity(): number {
+    return this.cartItems.reduce((sum, item) => sum + item.quantity, 0);
   }
 
   getAmountDue(): number {
