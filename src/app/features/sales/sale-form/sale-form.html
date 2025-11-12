@@ -1,1 +1,249 @@
-<p>sale-form works!</p>
+<div class="sale-form-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Nouvelle Vente</h1>
+    <button mat-stroked-button (click)="cancel()">
+      <mat-icon>arrow_back</mat-icon>
+      Retour
+    </button>
+  </div>
+
+  <form [formGroup]="saleForm" (ngSubmit)="onSubmit()">
+    <div class="form-grid">
+      <!-- Colonne Gauche : Produits -->
+      <div class="left-column">
+        <!-- Recherche de Produits -->
+        <mat-card class="search-card">
+          <mat-card-header>
+            <mat-card-title>Ajouter des Produits</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Rechercher un produit</mat-label>
+              <input matInput
+                     [formControl]="productSearchControl"
+                     [matAutocomplete]="auto"
+                     placeholder="Nom, SKU ou code-barres">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <mat-autocomplete #auto="matAutocomplete"
+                            [displayWith]="displayProductFn"
+                            (optionSelected)="addProductToCart($event.option.value)">
+              <mat-option *ngFor="let product of filteredProducts | async" [value]="product">
+                <div class="product-option">
+                  <div class="product-name">{{ product.name }}</div>
+                  <div class="product-details">
+                    <span class="sku">{{ product.sku }}</span>
+                    <span class="price">{{ product.unit_price | number:'1.0-0' }} FCFA</span>
+                    <span class="stock">Stock: {{ product.quantity }}</span>
+                  </div>
+                </div>
+              </mat-option>
+            </mat-autocomplete>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Panier -->
+        <mat-card class="cart-card">
+          <mat-card-header>
+            <mat-card-title>Panier ({{ cartItems.length }} articles)</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="cartItems.length === 0" class="empty-cart">
+              <mat-icon>shopping_cart</mat-icon>
+              <p>Aucun produit ajouté</p>
+              <small>Recherchez et ajoutez des produits ci-dessus</small>
+            </div>
+
+            <div *ngIf="cartItems.length > 0" class="cart-table-container">
+              <table mat-table [dataSource]="cartItems" class="cart-table">
+                <!-- Produit -->
+                <ng-container matColumnDef="product_name">
+                  <th mat-header-cell *matHeaderCellDef>Produit</th>
+                  <td mat-cell *matCellDef="let item">
+                    <div class="product-cell">
+                      <strong>{{ item.product_name }}</strong>
+                      <small>{{ item.product_sku }}</small>
+                      <small class="stock-info">Dispo: {{ item.available_stock }}</small>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Prix Unitaire -->
+                <ng-container matColumnDef="unit_price">
+                  <th mat-header-cell *matHeaderCellDef>Prix Unit.</th>
+                  <td mat-cell *matCellDef="let item">
+                    {{ item.unit_price | number:'1.0-0' }} FCFA
+                  </td>
+                </ng-container>
+
+                <!-- Quantité -->
+                <ng-container matColumnDef="quantity">
+                  <th mat-header-cell *matHeaderCellDef>Quantité</th>
+                  <td mat-cell *matCellDef="let item">
+                    <div class="quantity-controls">
+                      <button mat-icon-button type="button"
+                              (click)="updateQuantity(item, item.quantity - 1)">
+                        <mat-icon>remove</mat-icon>
+                      </button>
+                      <input type="number"
+                             [value]="item.quantity"
+                             (change)="updateQuantity(item, +$any($event.target).value)"
+                             min="1"
+                             [max]="item.available_stock">
+                      <button mat-icon-button type="button"
+                              (click)="updateQuantity(item, item.quantity + 1)"
+                              [disabled]="item.quantity >= item.available_stock">
+                        <mat-icon>add</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Sous-total -->
+                <ng-container matColumnDef="subtotal">
+                  <th mat-header-cell *matHeaderCellDef>Sous-total</th>
+                  <td mat-cell *matCellDef="let item">
+                    <strong>{{ item.subtotal | number:'1.0-0' }} FCFA</strong>
+                  </td>
+                </ng-container>
+
+                <!-- Actions -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let item">
+                    <button mat-icon-button type="button"
+                            (click)="removeFromCart(item)"
+                            color="warn">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Colonne Droite : Informations et Paiement -->
+      <div class="right-column">
+        <!-- Informations Client -->
+        <mat-card class="customer-card">
+          <mat-card-header>
+            <mat-card-title>Informations Client (Optionnel)</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nom du Client</mat-label>
+              <input matInput formControlName="customer_name" placeholder="Jean Dupont">
+              <mat-icon matSuffix>person</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Téléphone</mat-label>
+              <input matInput formControlName="customer_phone" placeholder="690123456">
+              <mat-icon matSuffix>phone</mat-icon>
+            </mat-form-field>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Paiement -->
+        <mat-card class="payment-card">
+          <mat-card-header>
+            <mat-card-title>Paiement</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <!-- Méthode de Paiement -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Méthode de Paiement</mat-label>
+              <mat-select formControlName="payment_method">
+                <mat-option value="cash">Espèces</mat-option>
+                <mat-option value="mobile_money">Mobile Money</mat-option>
+                <mat-option value="card">Carte Bancaire</mat-option>
+                <mat-option value="credit">Crédit</mat-option>
+              </mat-select>
+              <mat-icon matSuffix>payment</mat-icon>
+            </mat-form-field>
+
+            <!-- Montant Payé -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Montant Payé</mat-label>
+              <input matInput type="number" formControlName="amount_paid"
+                     placeholder="0" min="0">
+              <span matTextSuffix>FCFA</span>
+            </mat-form-field>
+
+            <!-- Notes -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Notes (Optionnel)</mat-label>
+              <textarea matInput formControlName="notes"
+                        rows="2"
+                        placeholder="Notes supplémentaires..."></textarea>
+            </mat-form-field>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Résumé -->
+        <mat-card class="summary-card">
+          <mat-card-header>
+            <mat-card-title>Résumé</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="summary-row">
+              <span>Total Articles:</span>
+              <strong>{{ cartItems.length }}</strong>
+            </div>
+
+            <div class="summary-row">
+              <span>Quantité Totale:</span>
+              <strong>{{ cartItems.reduce((sum, item) => sum + item.quantity, 0) }}</strong>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="summary-row total-row">
+              <span>TOTAL:</span>
+              <strong class="total-amount">{{ getTotalAmount() | number:'1.0-0' }} FCFA</strong>
+            </div>
+
+            <div class="summary-row">
+              <span>Montant Payé:</span>
+              <strong>{{ saleForm.get('amount_paid')?.value | number:'1.0-0' }} FCFA</strong>
+            </div>
+
+            <div class="summary-row"
+                 *ngIf="getAmountDue() > 0"
+                 [class.warning]="getAmountDue() > 0">
+              <span>Montant Dû:</span>
+              <strong>{{ getAmountDue() | number:'1.0-0' }} FCFA</strong>
+            </div>
+
+            <div class="summary-row success"
+                 *ngIf="getChange() > 0">
+              <span>Monnaie à Rendre:</span>
+              <strong>{{ getChange() | number:'1.0-0' }} FCFA</strong>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="cancel()"
+                  [disabled]="submitting">
+            Annuler
+          </button>
+          <button mat-raised-button color="primary" type="submit"
+                  [disabled]="cartItems.length === 0 || submitting">
+            <mat-icon *ngIf="!submitting">check</mat-icon>
+            <mat-icon *ngIf="submitting" class="spinning">sync</mat-icon>
+            {{ submitting ? 'Enregistrement...' : 'Enregistrer la Vente' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -65,6 +65,23 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'sales',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/sales/sales-list/sales-list').then(m => m.SalesListComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/sales/sale-form/sale-form').then(m => m.SaleFormComponent)
+          },
+          {
+            path: ':id',
+            loadComponent: () => import('./features/sales/sale-detail/sale-detail').then(m => m.SaleDetailComponent)
+          }
+        ]
+      },
+      {
         path: 'reports',
         loadComponent: () => import('./features/reports/report.component').then(m => m.ReportComponent)
       }

@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProductService } from '../../core/services/product.service';
 import { StockMovementService } from '../../core/services/stock-movement.service';
 import { CategoryService } from '../../core/services/category.service';
+import { SaleService } from '../../core/services/sale.service';
 import { Product } from '../../shared/models/product.model';
 import { StockMovement } from '../../shared/models/stock-movement.model';
 import { StockMovementFormComponent } from '../stock-movements/stock-movement-form/stock-movement-form.component';
@@ -18,6 +19,9 @@ interface DashboardStats {
   lowStockProducts: number;
   totalValue: number;
   recentMovements: number;
+  totalSales: number;
+  totalRevenue: number;
+  totalProfit: number;
 }
 
 interface ActivityItem {
@@ -42,6 +46,9 @@ export class DashboardComponent implements OnInit {
     lowStockProducts: 0,
     totalValue: 0,
     recentMovements: 0,
+    totalSales: 0,
+    totalRevenue: 0,
+    totalProfit: 0,
   });
 
   recentActivities = signal<ActivityItem[]>([]);
@@ -190,6 +197,7 @@ export class DashboardComponent implements OnInit {
     private productService: ProductService,
     private stockMovementService: StockMovementService,
     private categoryService: CategoryService,
+    private saleService: SaleService,
     private dialog: MatDialog
   ) {}
 
@@ -208,8 +216,9 @@ export class DashboardComponent implements OnInit {
       products: this.productService.getAll(allDataParams),
       movements: this.stockMovementService.getAll(allDataParams),
       categories: this.categoryService.getAll(),
+      salesStats: this.saleService.getStatistics('today'),
     }).subscribe({
-      next: ({ products, movements, categories }) => {
+      next: ({ products, movements, categories, salesStats }) => {
         const productsList = products.data;
         const movementsList = movements.data;
         const categoriesList = categories.data || [];
@@ -225,6 +234,9 @@ export class DashboardComponent implements OnInit {
           lowStockProducts: lowStock.length,
           totalValue: totalValue,
           recentMovements: movements.total, // Utilise le total du backend
+          totalSales: salesStats.data?.total_sales || 0,
+          totalRevenue: salesStats.data?.total_revenue || 0,
+          totalProfit: salesStats.data?.total_profit || 0,
         });
 
         // Update doughnut chart (Stock Status)

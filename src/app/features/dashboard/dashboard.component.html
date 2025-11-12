@@ -92,6 +92,63 @@
     </mat-card>
   </div>
 
+  <!-- Sales Stats Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card stat-card-accent">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper accent">
+            <mat-icon class="stat-icon">point_of_sale</mat-icon>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Ventes Aujourd'hui</span>
+            <h2 class="stat-value">{{ stats().totalSales }}</h2>
+            <span class="stat-trend positive">
+              <mat-icon>receipt</mat-icon>
+              Transactions
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card stat-card-success">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper success">
+            <mat-icon class="stat-icon">attach_money</mat-icon>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Chiffre d'Affaires</span>
+            <h2 class="stat-value">{{ stats().totalRevenue | number:'1.0-0' }} FCFA</h2>
+            <span class="stat-trend positive">
+              <mat-icon>trending_up</mat-icon>
+              Aujourd'hui
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card stat-card-primary">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon-wrapper primary">
+            <mat-icon class="stat-icon">account_balance_wallet</mat-icon>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Profit Net</span>
+            <h2 class="stat-value">{{ stats().totalProfit | number:'1.0-0' }} FCFA</h2>
+            <span class="stat-trend positive">
+              <mat-icon>trending_up</mat-icon>
+              Marge: {{ stats().totalRevenue > 0 ? ((stats().totalProfit / stats().totalRevenue) * 100 | number:'1.1-1') : 0 }}%
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
   <!-- Quick Actions -->
   <div class="quick-actions-section">
     <h3 class="section-title">
@@ -110,6 +167,10 @@
       <mat-card class="quick-action-card" [routerLink]="['/stock-movements']">
         <mat-icon>output</mat-icon>
         <span>Sortie Stock</span>
+      </mat-card>
+      <mat-card class="quick-action-card" [routerLink]="['/sales/new']">
+        <mat-icon>point_of_sale</mat-icon>
+        <span>Nouvelle Vente</span>
       </mat-card>
       <mat-card class="quick-action-card" [routerLink]="['/reports']">
         <mat-icon>print</mat-icon>

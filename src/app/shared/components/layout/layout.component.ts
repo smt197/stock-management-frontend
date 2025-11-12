@@ -27,6 +27,7 @@ export class LayoutComponent implements OnInit {
     { icon: 'category', label: 'Catégories', route: '/categories', badge: null, badgeType: null },
     { icon: 'local_shipping', label: 'Fournisseurs', route: '/suppliers', badge: null, badgeType: null },
     { icon: 'shopping_cart', label: 'Commandes Fournisseurs', route: '/purchase-orders', badge: null, badgeType: null },
+    { icon: 'point_of_sale', label: 'Ventes', route: '/sales', badge: null, badgeType: null },
     {
       icon: 'swap_horiz',
       label: 'Mouvements Stock',

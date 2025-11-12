@@ -1,0 +1,222 @@
+<div class="sale-detail-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- Sale Details -->
+  <div *ngIf="!loading && sale">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <h1>Vente {{ sale.sale_number }}</h1>
+        <div class="status-chips">
+          <mat-chip [color]="getStatusColor(sale.status)">
+            {{ getStatusLabel(sale.status) }}
+          </mat-chip>
+          <mat-chip [color]="getPaymentStatusColor(sale.payment_status)">
+            {{ getPaymentStatusLabel(sale.payment_status) }}
+          </mat-chip>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button mat-stroked-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Retour
+        </button>
+        <button mat-stroked-button color="warn"
+                *ngIf="canCancel()"
+                (click)="cancelSale()">
+          <mat-icon>cancel</mat-icon>
+          Annuler la Vente
+        </button>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <!-- Left Column -->
+      <div class="left-column">
+        <!-- Sale Information -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>Informations de la Vente</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-row">
+              <span class="label">Numéro:</span>
+              <strong>{{ sale.sale_number }}</strong>
+            </div>
+            <div class="info-row">
+              <span class="label">Date:</span>
+              <strong>{{ formatDate(sale.sale_date) }}</strong>
+            </div>
+            <div class="info-row">
+              <span class="label">Statut:</span>
+              <mat-chip [color]="getStatusColor(sale.status)">
+                {{ getStatusLabel(sale.status) }}
+              </mat-chip>
+            </div>
+            <div class="info-row">
+              <span class="label">Méthode de Paiement:</span>
+              <strong>{{ getPaymentMethodLabel(sale.payment_method) }}</strong>
+            </div>
+            <div class="info-row">
+              <span class="label">Statut de Paiement:</span>
+              <mat-chip [color]="getPaymentStatusColor(sale.payment_status)">
+                {{ getPaymentStatusLabel(sale.payment_status) }}
+              </mat-chip>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Customer Information -->
+        <mat-card class="customer-card" *ngIf="sale.customer_name || sale.customer_phone">
+          <mat-card-header>
+            <mat-card-title>Informations Client</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-row" *ngIf="sale.customer_name">
+              <span class="label">Nom:</span>
+              <strong>{{ sale.customer_name }}</strong>
+            </div>
+            <div class="info-row" *ngIf="sale.customer_phone">
+              <span class="label">Téléphone:</span>
+              <strong>{{ sale.customer_phone }}</strong>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Notes -->
+        <mat-card class="notes-card" *ngIf="sale.notes">
+          <mat-card-header>
+            <mat-card-title>Notes</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>{{ sale.notes }}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Right Column -->
+      <div class="right-column">
+        <!-- Items Table -->
+        <mat-card class="items-card">
+          <mat-card-header>
+            <mat-card-title>Articles Vendus</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="table-container">
+              <table mat-table [dataSource]="sale.items || []" class="items-table">
+                <!-- Product Name -->
+                <ng-container matColumnDef="product_name">
+                  <th mat-header-cell *matHeaderCellDef>Produit</th>
+                  <td mat-cell *matCellDef="let item">
+                    <div class="product-cell">
+                      <strong>{{ item.product_name }}</strong>
+                      <small>{{ item.product_sku }}</small>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Unit Price -->
+                <ng-container matColumnDef="unit_price">
+                  <th mat-header-cell *matHeaderCellDef>Prix Unit.</th>
+                  <td mat-cell *matCellDef="let item">
+                    {{ item.unit_price | number:'1.0-0' }} FCFA
+                  </td>
+                </ng-container>
+
+                <!-- Quantity -->
+                <ng-container matColumnDef="quantity">
+                  <th mat-header-cell *matHeaderCellDef>Qté</th>
+                  <td mat-cell *matCellDef="let item">
+                    <strong>{{ item.quantity }}</strong>
+                  </td>
+                </ng-container>
+
+                <!-- Subtotal -->
+                <ng-container matColumnDef="subtotal">
+                  <th mat-header-cell *matHeaderCellDef>Sous-total</th>
+                  <td mat-cell *matCellDef="let item">
+                    <strong>{{ item.subtotal | number:'1.0-0' }} FCFA</strong>
+                  </td>
+                </ng-container>
+
+                <!-- Profit -->
+                <ng-container matColumnDef="profit">
+                  <th mat-header-cell *matHeaderCellDef>Profit</th>
+                  <td mat-cell *matCellDef="let item">
+                    <div class="profit-cell">
+                      <span class="profit-value">{{ getItemProfit(item) | number:'1.0-0' }} FCFA</span>
+                      <span class="margin">({{ getItemMargin(item) | number:'1.1-1' }}%)</span>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Summary -->
+        <mat-card class="summary-card">
+          <mat-card-header>
+            <mat-card-title>Résumé</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="summary-section">
+              <h3>Montants</h3>
+              <div class="summary-row">
+                <span>Total Articles:</span>
+                <strong>{{ sale.items?.length || 0 }}</strong>
+              </div>
+              <div class="summary-row">
+                <span>Quantité Totale:</span>
+                <strong>{{ sale.items?.reduce((sum, item) => sum + item.quantity, 0) || 0 }}</strong>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="summary-row total-row">
+                <span>TOTAL:</span>
+                <strong class="total-amount">{{ sale.total_amount | number:'1.0-0' }} FCFA</strong>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="summary-section">
+              <h3>Paiement</h3>
+              <div class="summary-row">
+                <span>Montant Payé:</span>
+                <strong>{{ sale.amount_paid | number:'1.0-0' }} FCFA</strong>
+              </div>
+              <div class="summary-row" *ngIf="sale.amount_due > 0" [class.warning]="sale.amount_due > 0">
+                <span>Montant Dû:</span>
+                <strong>{{ sale.amount_due | number:'1.0-0' }} FCFA</strong>
+              </div>
+              <div class="summary-row success" *ngIf="(sale.amount_paid - sale.total_amount) > 0">
+                <span>Monnaie Rendue:</span>
+                <strong>{{ (sale.amount_paid - sale.total_amount) | number:'1.0-0' }} FCFA</strong>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="summary-section">
+              <h3>Rentabilité</h3>
+              <div class="summary-row profit-row">
+                <span>Profit Total:</span>
+                <strong class="profit-amount">{{ sale.total_profit | number:'1.0-0' }} FCFA</strong>
+              </div>
+              <div class="summary-row">
+                <span>Marge:</span>
+                <strong>{{ sale.total_margin_percentage | number:'1.1-1' }}%</strong>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>
