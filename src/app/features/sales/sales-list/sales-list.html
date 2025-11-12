@@ -1,0 +1,199 @@
+<div class="sales-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Ventes</h1>
+    <button mat-raised-button color="primary" (click)="createSale()">
+      <mat-icon>add</mat-icon>
+      Nouvelle Vente
+    </button>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <!-- Recherche -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Rechercher</mat-label>
+          <input matInput [(ngModel)]="filters.search" (keyup.enter)="applyFilters()"
+                 placeholder="N° vente, client...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Période -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Période</mat-label>
+          <mat-select [(ngModel)]="filters.period" (selectionChange)="applyFilters()">
+            <mat-option value="">Toutes</mat-option>
+            <mat-option value="today">Aujourd'hui</mat-option>
+            <mat-option value="week">Cette semaine</mat-option>
+            <mat-option value="month">Ce mois</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Statut -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Statut</mat-label>
+          <mat-select [(ngModel)]="filters.status" (selectionChange)="applyFilters()">
+            <mat-option value="">Tous</mat-option>
+            <mat-option value="completed">Complétée</mat-option>
+            <mat-option value="cancelled">Annulée</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Paiement -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Statut Paiement</mat-label>
+          <mat-select [(ngModel)]="filters.payment_status" (selectionChange)="applyFilters()">
+            <mat-option value="">Tous</mat-option>
+            <mat-option value="paid">Payé</mat-option>
+            <mat-option value="pending">En attente</mat-option>
+            <mat-option value="partial">Partiel</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Méthode de paiement -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Méthode</mat-label>
+          <mat-select [(ngModel)]="filters.payment_method" (selectionChange)="applyFilters()">
+            <mat-option value="">Toutes</mat-option>
+            <mat-option value="cash">Espèces</mat-option>
+            <mat-option value="mobile_money">Mobile Money</mat-option>
+            <mat-option value="card">Carte</mat-option>
+            <mat-option value="credit">Crédit</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Boutons -->
+        <div class="filter-buttons">
+          <button mat-stroked-button (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Effacer
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tableau -->
+  <mat-card class="table-card">
+    <div class="table-container">
+      <table mat-table [dataSource]="sales" class="sales-table">
+
+        <!-- N° Vente -->
+        <ng-container matColumnDef="sale_number">
+          <th mat-header-cell *matHeaderCellDef>N° Vente</th>
+          <td mat-cell *matCellDef="let sale">
+            <strong>{{ sale.sale_number }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Client -->
+        <ng-container matColumnDef="customer_name">
+          <th mat-header-cell *matHeaderCellDef>Client</th>
+          <td mat-cell *matCellDef="let sale">
+            {{ sale.customer_name || 'Client anonyme' }}
+            <div class="phone" *ngIf="sale.customer_phone">{{ sale.customer_phone }}</div>
+          </td>
+        </ng-container>
+
+        <!-- Date -->
+        <ng-container matColumnDef="sale_date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let sale">
+            {{ sale.sale_date | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
+
+        <!-- Total -->
+        <ng-container matColumnDef="total_amount">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
+          <td mat-cell *matCellDef="let sale">
+            <strong>{{ sale.total_amount | number:'1.0-0' }} FCFA</strong>
+          </td>
+        </ng-container>
+
+        <!-- Profit -->
+        <ng-container matColumnDef="profit">
+          <th mat-header-cell *matHeaderCellDef>Profit</th>
+          <td mat-cell *matCellDef="let sale" class="profit-cell">
+            <div class="profit-value">{{ sale.total_profit | number:'1.0-0' }} FCFA</div>
+            <div class="margin">{{ sale.total_margin_percentage | number:'1.1-1' }}%</div>
+          </td>
+        </ng-container>
+
+        <!-- Méthode de paiement -->
+        <ng-container matColumnDef="payment_method">
+          <th mat-header-cell *matHeaderCellDef>Paiement</th>
+          <td mat-cell *matCellDef="let sale">
+            {{ getPaymentMethodLabel(sale.payment_method) }}
+          </td>
+        </ng-container>
+
+        <!-- Statut paiement -->
+        <ng-container matColumnDef="payment_status">
+          <th mat-header-cell *matHeaderCellDef>Statut Paiement</th>
+          <td mat-cell *matCellDef="let sale">
+            <mat-chip [color]="getPaymentStatusColor(sale.payment_status)">
+              {{ getPaymentStatusLabel(sale.payment_status) }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Statut vente -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Statut</th>
+          <td mat-cell *matCellDef="let sale">
+            <mat-chip [color]="getStatusColor(sale.status)">
+              {{ getStatusLabel(sale.status) }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let sale">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Actions">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="viewSale(sale)">
+                <mat-icon>visibility</mat-icon>
+                <span>Voir</span>
+              </button>
+              <button mat-menu-item (click)="cancelSale(sale)"
+                      *ngIf="sale.status === 'completed'"
+                      class="danger-item">
+                <mat-icon>cancel</mat-icon>
+                <span>Annuler</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- Empty state -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-data">
+              <mat-icon>receipt_long</mat-icon>
+              <p>Aucune vente trouvée</p>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator
+      [length]="totalSales"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </mat-card>
+</div>
