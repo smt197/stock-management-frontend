@@ -54,7 +54,7 @@ export class ProductFormComponent implements OnInit {
     this.productForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(255)]],
       description: [''],
-      sku: ['', [Validators.required, Validators.maxLength(50)]],
+      sku: ['', [Validators.maxLength(50)]], // Optional - auto-generated if empty
       barcode: [''],
       category_id: [null, Validators.required],
       supplier_id: [null],

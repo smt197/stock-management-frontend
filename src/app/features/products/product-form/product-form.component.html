@@ -26,12 +26,10 @@
 
       <div class="form-row two-columns">
         <mat-form-field appearance="outline">
-          <mat-label>SKU</mat-label>
-          <input matInput formControlName="sku" placeholder="Ex: PROD-001" required>
+          <mat-label>SKU (Optionnel)</mat-label>
+          <input matInput formControlName="sku" placeholder="Ex: PROD-001">
           <mat-icon matPrefix>qr_code</mat-icon>
-          <mat-error *ngIf="productForm.get('sku')?.hasError('required')">
-            Le SKU est requis
-          </mat-error>
+          <mat-hint>Laissez vide pour génération automatique (PRD-2025-XXX)</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
