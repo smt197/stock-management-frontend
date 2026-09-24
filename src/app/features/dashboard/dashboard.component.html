@@ -327,6 +327,28 @@
       </mat-card-content>
     </mat-card>
 
+    <!-- Sales Evolution Trend Chart -->
+    <mat-card class="chart-card-large modern-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>trending_up</mat-icon>
+          Évolution des Ventes (7 derniers jours)
+        </mat-card-title>
+        <button mat-icon-button matTooltip="Actualiser" (click)="loadDashboardData()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container-large">
+          <canvas baseChart
+            [type]="salesLineChartType"
+            [data]="salesLineChartData()"
+            [options]="salesLineChartOptions">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
     <!-- Stock Movements Trend Chart -->
     <mat-card class="chart-card-large modern-card">
       <mat-card-header>

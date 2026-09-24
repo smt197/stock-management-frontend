@@ -136,21 +136,24 @@ export class SaleFormComponent implements OnInit {
       if (existingItem.quantity < existingItem.available_stock) {
         existingItem.quantity++;
         existingItem.subtotal = existingItem.unit_price * existingItem.quantity;
+        this.cartItems = [...this.cartItems];
         this.snackBar.open(`Quantité augmentée: ${product.name}`, 'Fermer', { duration: 2000 });
       } else {
         this.snackBar.open(`Stock insuffisant pour ${product.name}`, 'Fermer', { duration: 3000 });
       }
     } else {
       // Ajouter un nouveau produit
+      const unitPrice = parseFloat(product.unit_price) || 0;
       this.cartItems.push({
         product_id: product.id,
         product_name: product.name,
         product_sku: product.sku,
-        unit_price: product.unit_price,
+        unit_price: unitPrice,
         available_stock: product.quantity,
         quantity: 1,
-        subtotal: product.unit_price
+        subtotal: unitPrice
       });
+      this.cartItems = [...this.cartItems];
       this.snackBar.open(`Produit ajouté: ${product.name}`, 'Fermer', { duration: 2000 });
     }
 
@@ -186,6 +189,7 @@ export class SaleFormComponent implements OnInit {
     const index = this.cartItems.indexOf(item);
     if (index > -1) {
       this.cartItems.splice(index, 1);
+      this.cartItems = [...this.cartItems];
       this.snackBar.open('Produit retiré du panier', 'Fermer', { duration: 2000 });
     }
   }

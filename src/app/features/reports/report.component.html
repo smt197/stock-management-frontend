@@ -1,7 +1,7 @@
 <div class="report-container">
   <div class="report-header">
     <h1>Génération de Rapports</h1>
-    <p class="header-subtitle">Filtrez et exportez les données de votre inventaire.</p>
+    <p class="header-subtitle">Filtrez et exportez les données de votre inventaire et de vos ventes.</p>
   </div>
 
   <!-- Filtres -->
@@ -11,9 +11,17 @@
         <mat-form-field appearance="outline">
           <mat-label>Type de rapport</mat-label>
           <mat-select formControlName="reportType" required>
-            <mat-option value="stock">Rapport de Stock Actuel</mat-option>
-            <mat-option value="movements">Rapport des Mouvements</mat-option>
-            <mat-option value="low_stock">Rapport de Stock Faible</mat-option>
+            <mat-optgroup label="Stock">
+              <mat-option value="stock">Rapport de Stock Actuel</mat-option>
+              <mat-option value="low_stock">Rapport de Stock Faible</mat-option>
+              <mat-option value="movements">Rapport des Mouvements</mat-option>
+              <mat-option value="inventory_value">Valeur du Stock</mat-option>
+            </mat-optgroup>
+            <mat-optgroup label="Ventes">
+              <mat-option value="sales">Rapport des Ventes</mat-option>
+              <mat-option value="top_products">Top Produits Vendus</mat-option>
+              <mat-option value="profit">Rapport de Rentabilité</mat-option>
+            </mat-optgroup>
           </mat-select>
           <mat-error *ngIf="reportForm.get('reportType')?.hasError('required')">
             Le type de rapport est requis.
@@ -55,6 +63,30 @@
       <p>Génération du rapport...</p>
     </div>
   } @else if (reportData.length > 0) {
+
+    <!-- Résumé -->
+    @if (reportSummary) {
+      <mat-card class="summary-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>analytics</mat-icon>
+            Résumé
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="summary-grid">
+            @for (key of summaryKeys; track key) {
+              <div class="summary-item">
+                <span class="summary-label">{{ key }}</span>
+                <span class="summary-value">{{ reportSummary[key] }}</span>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Tableau -->
     <mat-card class="results-card">
       <mat-card-header>
         <mat-card-title>{{ reportTitle }}</mat-card-title>

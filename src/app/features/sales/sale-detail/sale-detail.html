@@ -24,6 +24,10 @@
           <mat-icon>arrow_back</mat-icon>
           Retour
         </button>
+        <button mat-raised-button color="primary" (click)="printReceipt()">
+          <mat-icon>print</mat-icon>
+          Imprimer le reçu
+        </button>
         <button mat-stroked-button color="warn"
                 *ngIf="canCancel()"
                 (click)="cancelSale()">

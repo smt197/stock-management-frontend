@@ -12,6 +12,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { SaleService } from '../../../core/services/sale.service';
 import { Sale } from '../../../core/models/sale.model';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-sale-detail',
@@ -82,6 +84,145 @@ export class SaleDetailComponent implements OnInit {
         }
       });
     }
+  }
+
+  printReceipt(): void {
+    if (!this.sale) return;
+
+    this.saleService.getReceipt(this.sale.id).subscribe({
+      next: (response) => {
+        const receipt = response.data;
+        this.generateReceiptPdf(receipt);
+      },
+      error: () => {
+        this.snackBar.open('Erreur lors de la génération du reçu', 'Fermer', { duration: 3000 });
+      }
+    });
+  }
+
+  private generateReceiptPdf(receipt: any): void {
+    const doc = new jsPDF({
+      unit: 'mm',
+      format: [80, 200] // Receipt format (80mm width)
+    });
+
+    const pageWidth = 80;
+    const margin = 5;
+    let y = 10;
+
+    // Header
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('STOCK MANAGEMENT', pageWidth / 2, y, { align: 'center' });
+    y += 6;
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Système de Gestion de Stock', pageWidth / 2, y, { align: 'center' });
+    y += 8;
+
+    // Separator
+    doc.setLineWidth(0.3);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 5;
+
+    // Sale info
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Reçu N° ${receipt.sale_number}`, pageWidth / 2, y, { align: 'center' });
+    y += 5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.text(`Date: ${receipt.sale_date}`, margin, y);
+    y += 4;
+    doc.text(`Client: ${receipt.customer_name}`, margin, y);
+    y += 4;
+    if (receipt.customer_phone) {
+      doc.text(`Tél: ${receipt.customer_phone}`, margin, y);
+      y += 4;
+    }
+    doc.text(`Vendeur: ${receipt.sold_by}`, margin, y);
+    y += 5;
+
+    // Separator
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 3;
+
+    // Items table
+    const head = [['Article', 'Qté', 'P.U.', 'Total']];
+    const body = receipt.items.map((item: any) => [
+      item.product_name.substring(0, 18),
+      item.quantity.toString(),
+      this.formatNumber(item.unit_price),
+      this.formatNumber(item.subtotal),
+    ]);
+
+    autoTable(doc, {
+      head: head,
+      body: body,
+      startY: y,
+      theme: 'plain',
+      styles: { fontSize: 7, cellPadding: 1.5 },
+      headStyles: { fontStyle: 'bold', fontSize: 7 },
+      columnStyles: {
+        0: { cellWidth: 30 },
+        1: { cellWidth: 8, halign: 'center' },
+        2: { cellWidth: 15, halign: 'right' },
+        3: { cellWidth: 17, halign: 'right' },
+      },
+      margin: { left: margin, right: margin },
+    });
+
+    y = (doc as any).lastAutoTable?.finalY ? (doc as any).lastAutoTable.finalY + 3 : y + 20;
+
+    // Separator
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 5;
+
+    // Totals
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TOTAL:', margin, y);
+    doc.text(`${this.formatNumber(receipt.total_amount)} FCFA`, pageWidth - margin, y, { align: 'right' });
+    y += 5;
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+
+    const paymentLabels: any = {
+      cash: 'Espèces', mobile_money: 'Mobile Money', card: 'Carte', credit: 'Crédit'
+    };
+    doc.text(`Paiement: ${paymentLabels[receipt.payment_method] || receipt.payment_method}`, margin, y);
+    y += 4;
+    doc.text(`Payé: ${this.formatNumber(receipt.amount_paid)} FCFA`, margin, y);
+    y += 4;
+
+    if (parseFloat(receipt.amount_due) > 0) {
+      doc.text(`Reste dû: ${this.formatNumber(receipt.amount_due)} FCFA`, margin, y);
+      y += 4;
+    }
+
+    if (receipt.change > 0) {
+      doc.text(`Monnaie: ${this.formatNumber(receipt.change)} FCFA`, margin, y);
+      y += 4;
+    }
+
+    y += 3;
+
+    // Footer separator
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 5;
+
+    doc.setFontSize(8);
+    doc.text('Merci pour votre achat !', pageWidth / 2, y, { align: 'center' });
+    y += 4;
+    doc.setFontSize(6);
+    doc.text(`Imprimé le ${new Date().toLocaleString('fr-FR')}`, pageWidth / 2, y, { align: 'center' });
+
+    // Save
+    doc.save(`recu-${receipt.sale_number}.pdf`);
+    this.snackBar.open('Reçu téléchargé avec succès', 'Fermer', { duration: 3000 });
   }
 
   goBack(): void {
@@ -155,5 +296,10 @@ export class SaleDetailComponent implements OnInit {
   getTotalQuantity(items: any[]): number {
     if (!items) return 0;
     return items.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
+  private formatNumber(val: any): string {
+    if (val === null || val === undefined || isNaN(Number(val))) return '0';
+    return parseFloat(val).toLocaleString('fr-FR').replace(/[\u202F\u00A0]/g, ' ');
   }
 }

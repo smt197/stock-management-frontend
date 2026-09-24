@@ -79,4 +79,13 @@ export class SaleService {
       { params: { period } }
     );
   }
+
+  /**
+   * Récupérer les données du reçu de vente
+   */
+  getReceipt(id: number): Observable<{ success: boolean; data: any }> {
+    return this.http.get<{ success: boolean; data: any }>(
+      `${this.apiUrl}/${id}/receipt`
+    );
+  }
 }

@@ -193,6 +193,50 @@ export class DashboardComponent implements OnInit {
     },
   };
 
+  public readonly salesLineChartType = 'line' as const;
+  public salesLineChartData = signal<ChartData<'line'>>({
+    labels: [],
+    datasets: [
+      {
+        label: "Chiffre d'Affaires (FCFA)",
+        data: [],
+        borderColor: '#3f51b5',
+        backgroundColor: 'rgba(63, 81, 181, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+    ],
+  });
+
+  public salesLineChartOptions: ChartConfiguration<'line'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          padding: 20,
+          usePointStyle: true,
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const val = typeof context.parsed.y === 'number' ? context.parsed.y : 0;
+            return `${val.toLocaleString('fr-FR')} FCFA`;
+          },
+        },
+      },
+    },
+  };
+
   constructor(
     private productService: ProductService,
     private stockMovementService: StockMovementService,
@@ -217,11 +261,13 @@ export class DashboardComponent implements OnInit {
       movements: this.stockMovementService.getAll(allDataParams),
       categories: this.categoryService.getAll(),
       salesStats: this.saleService.getStatistics('today'),
+      recentSales: this.saleService.getSales({ limit: 100 }),
     }).subscribe({
-      next: ({ products, movements, categories, salesStats }) => {
+      next: ({ products, movements, categories, salesStats, recentSales }) => {
         const productsList = products.data;
         const movementsList = movements.data;
         const categoriesList = categories.data || [];
+        const salesList = recentSales.data || [];
 
         // Calculate stats using the total from backend (plus précis)
         const totalValue = productsList.reduce((sum, p) => sum + p.unit_price * p.quantity, 0);
@@ -283,6 +329,7 @@ export class DashboardComponent implements OnInit {
         const last7Days = this.getLast7Days();
         const entriesData: number[] = [];
         const exitsData: number[] = [];
+        const salesRevenueData: number[] = [];
 
         last7Days.forEach((day) => {
           const dayMovements = movementsList.filter((m) => {
@@ -299,6 +346,14 @@ export class DashboardComponent implements OnInit {
 
           entriesData.push(entries);
           exitsData.push(exits);
+
+          // Sales revenue for day
+          const daySales = salesList.filter((s: any) => {
+            const saleDate = new Date(s.sale_date || s.created_at || '').toDateString();
+            return saleDate === day.date.toDateString() && s.status !== 'cancelled';
+          });
+          const revenue = daySales.reduce((sum: number, s: any) => sum + (parseFloat(s.total_amount) || 0), 0);
+          salesRevenueData.push(revenue);
         });
 
         this.lineChartData.set({
@@ -319,6 +374,23 @@ export class DashboardComponent implements OnInit {
               data: exitsData,
               borderColor: '#f44336',
               backgroundColor: 'rgba(244, 67, 54, 0.1)',
+              fill: true,
+              tension: 0.4,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+            },
+          ],
+        });
+
+        // Sales Evolution Line Chart
+        this.salesLineChartData.set({
+          labels: last7Days.map((d) => d.label),
+          datasets: [
+            {
+              label: "Chiffre d'Affaires (FCFA)",
+              data: salesRevenueData,
+              borderColor: '#3f51b5',
+              backgroundColor: 'rgba(63, 81, 181, 0.1)',
               fill: true,
               tension: 0.4,
               pointRadius: 4,
